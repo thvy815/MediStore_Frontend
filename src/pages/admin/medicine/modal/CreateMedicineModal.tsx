@@ -35,7 +35,7 @@ const CreateMedicineModal: React.FC<Props> = ({ onClose, onCreated }) => {
       unitId: "",
       conversionFactor: "",
       price: "",
-      isDefault: true, // row đầu tiên mặc định là default
+      isDefault: true, // row unit đầu tiên mặc định là default
     },
   ]);
 
@@ -226,10 +226,19 @@ const CreateMedicineModal: React.FC<Props> = ({ onClose, onCreated }) => {
               value={formData.ingredients}
               onChange={(v) => handleChange("ingredients", v)}
             />
+
+            <div className="col-span-2 -mt-2">
+              <FormField
+                label="Image URL"
+                placeholder="https://example.com/image.jpg"
+                value={formData.imageUrl}
+                onChange={(v) => handleChange("imageUrl", v)}
+              />
+            </div>
           </div>
 
           {/* Prescription & Active */}
-          <div className="flex items-center gap-6 col-span-2 mt-2">
+          <div className="flex items-center gap-6 col-span-2 mt-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"

@@ -49,13 +49,14 @@ const MedicinesPage: React.FC = () => {
     setShowUpdateModal(true);
   };
 
-  // Delete
-  const handleDelete = async (id: string) => {
+  // Update product active
+  const handleToggleActive = async (id: string, nextActive: boolean) => {
     try {
-      await productService.delete(id);
-      fetchProducts();
+      await productService.updateActive(id, nextActive);
+      fetchProducts(); // reload list
     } catch (e) {
-      console.error("Delete error:", e);
+      console.error("Toggle active error:", e);
+      alert("Update status failed");
     }
   };
 
@@ -104,7 +105,7 @@ const MedicinesPage: React.FC = () => {
               key={prod.id}
               med={prod}            // Card xài chung
               onEdit={() => handleEdit(prod)}
-              onDelete={() => handleDelete(prod.id)}
+              onToggleActive={handleToggleActive}
             />
           ))}
         </div>

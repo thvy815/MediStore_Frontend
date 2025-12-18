@@ -4,10 +4,10 @@ import type { ProductResponse } from "@/types/product";
 interface MedicineCardProps {
   med: ProductResponse;
   onEdit: (m: ProductResponse) => void;
-  onDelete: (id: string) => void;
+  onToggleActive: (id: string, nextActive: boolean) => void;
 }
 
-const MedicineCard: React.FC<MedicineCardProps> = ({ med, onEdit, onDelete }) => {
+const MedicineCard: React.FC<MedicineCardProps> = ({ med, onEdit, onToggleActive }) => {
   const defaultUnit =
     med.units?.find((u) => u.isDefault) || med.units?.[0];
 
@@ -60,11 +60,14 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ med, onEdit, onDelete }) =>
           Edit
         </button>
 
+        {/* TOGGLE ACTIVE */}
         <button
-          className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm w-full"
-          onClick={() => onDelete(med.id)}
+          className={`px-3 py-2 text-white rounded-lg text-sm w-full ${
+            med.isActive ? "bg-red-500" : "bg-emerald-600"
+          }`}
+          onClick={() => onToggleActive(med.id, !med.isActive)}
         >
-          Delete
+          {med.isActive ? "Deactivate" : "Activate"}
         </button>
       </div>
     </div>

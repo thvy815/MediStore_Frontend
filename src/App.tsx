@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import MedicinesPage from "@/pages/medicine/admin/MedicinesPage";
+import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 
 const App: React.FC = () => {
   return (

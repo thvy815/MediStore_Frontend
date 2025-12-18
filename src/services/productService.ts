@@ -13,6 +13,9 @@ export const productService = {
   update: (id: string, data: ProductRequest) =>
     api.put(`/products/${id}`, data),
 
+  updateActive: (id: string, isActive: boolean) =>
+    api.patch(`/products/${id}/active`, { isActive }),
+
   delete: (id: string) =>
     api.delete(`/products/${id}`),
 };
