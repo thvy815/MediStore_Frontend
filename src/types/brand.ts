@@ -10,3 +10,11 @@ export interface BrandCreateRequest {
   country?: string;
   description?: string;
 }
+
+export interface BrandView {
+  id: string;
+  name: string;
+  country?: string;
+  description?: string;
+  products?: unknown[];
+}
