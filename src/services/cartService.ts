@@ -38,7 +38,7 @@ export const cartService = {
     data: {
       quantity?: number;
       productUnitId?: string;
-      isSelected?: boolean;
+      selected?: boolean;
     }
   ) =>
     api.put(`/cart/item/${id}`, {

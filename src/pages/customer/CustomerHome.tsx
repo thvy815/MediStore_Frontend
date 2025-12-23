@@ -5,6 +5,7 @@ import ProductCard from "@/components/medicine/ProductCard";
 import NewProductsSection from "@/components/layout/NewProductsSection";
 import FeaturedCategories from "@/components/layout/FeaturedCategories";
 import FavoriteBrands from "@/components/layout/FavoriteBrands";
+import HomeCarousel from "@/components/layout/HomeCarousel";
 
 import { productService } from "@/services/productService";
 import { brandService } from "@/services/brandService";
@@ -106,28 +107,11 @@ export default function CustomerHome() {
   // ================= RENDER =================
   return (
     <div className="min-h-screen bg-[#f6faf7]">
-      {/* ================= HERO ================= */}
-      <section className="px-6 py-16 grid grid-cols-1 md:grid-cols-2 items-center gap-10">
-        <div>
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
-            Advertisement
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Where to grow your business as a photographer: site or social media?
-          </p>
-          <button className="bg-green-500 text-white px-6 py-3 rounded-md">
-            Start
-          </button>
-        </div>
+      {/* ================= HERO CAROUSEL ================= */}
+<section className="px-6 py-10">
+  <HomeCarousel />
+</section>
 
-        <div className="flex justify-center">
-          <img
-            src="/assets/advertisement.png"
-            alt="Advertisement"
-            className="w-full max-w-md"
-          />
-        </div>
-      </section>
 
       {/* ================= BEST SELLING ================= */}
       <section className="px-6 pb-16">
@@ -158,8 +142,7 @@ export default function CustomerHome() {
       <NewProductsSection products={products} loading={loading} />
 
       {/* ================= FEATURED CATEGORIES ================= */}
-      <FeaturedCategories categories={[]}
-       />
+      <FeaturedCategories categories={categories} />
       
 
       {/* ================= FAVORITE BRANDS ================= */}

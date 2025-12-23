@@ -2,12 +2,12 @@ export interface CartItem {
   id: string;
   productId: string;
   productUnitId: string;
-  name: string;
+  productName: string;
   imageUrl: string;
-  unit: string;
+  unitName: string;
   unitPrice: number;
   quantity: number;
-  isSelected: boolean;
+  selected: boolean;
 }
 
 export interface CartResponse {

@@ -3,69 +3,84 @@ import { Minus, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cartService } from "@/services/cartService";
 import type { CartItem } from "@/types/cart";
+import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { setSelectedItems } = useCheckout();
 
-  const toggleSelect = async (item: CartItem) => {
-  try {
-    await cartService.updateItem(item.id, {
-  quantity: item.quantity,
-  productUnitId: item.productUnitId,
-  isSelected: !item.isSelected,
-});
-
-
-    loadCart();
-  } catch (err) {
-    console.error("Toggle select failed", err);
-  }
+const handlePurchase = () => {
+  const selected = items.filter(i => i.selected);
+  setSelectedItems(selected);
+  navigate("/checkout/shipping");
 };
 
 
   // ================= LOAD CART =================
   const loadCart = async () => {
-  try {
-    const res = await cartService.getCart();
+    try {
+      const res = await cartService.getCart();
+      setItems(res.data); // ✅ res.data là CartItem[]
+    } catch (err) {
+      console.error("Load cart failed", err);
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // ✅ res.data LÀ CartItem[]
-    setItems(res.data);
-  } catch (err) {
-    console.error(err);
-    setItems([]); // fallback an toàn
-  } finally {
-    setLoading(false);
-  }
-};
   useEffect(() => {
     loadCart();
   }, []);
+
+  // ================= TOGGLE SELECT =================
+  const toggleSelect = async (item: CartItem) => {
+    try {
+      await cartService.updateItem(item.id, {
+        quantity: item.quantity,
+        productUnitId: item.productUnitId,
+        selected: !item.selected, // ✅ ĐÚNG FIELD
+      });
+
+      loadCart();
+    } catch (err) {
+      console.error("Toggle select failed", err);
+    }
+  };
 
   // ================= UPDATE QUANTITY =================
   const updateQuantity = async (item: CartItem, qty: number) => {
     if (qty < 1) return;
 
-    await cartService.updateItem(item.id, {
-      quantity: qty,
-    });
+    try {
+      await cartService.updateItem(item.id, {
+        quantity: qty,
+        productUnitId: item.productUnitId,
+        selected: item.selected,
+      });
 
-    loadCart();
+      loadCart();
+    } catch (err) {
+      console.error("Update quantity failed", err);
+    }
   };
 
   // ================= REMOVE ITEM =================
   const removeItem = async (id: string) => {
-    await cartService.deleteItem(id);
-    loadCart();
+    try {
+      await cartService.deleteItem(id);
+      loadCart();
+    } catch (err) {
+      console.error("Remove item failed", err);
+    }
   };
 
   // ================= CALCULATE TOTAL =================
   const subtotal = items
-  .filter((i) => i.isSelected)
-  .reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
-
-
+    .filter((i) => i.selected) // ✅ CHỈ TÍNH ITEM ĐƯỢC CHỌN
+    .reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
   if (loading) return <p>Loading cart...</p>;
 
@@ -92,56 +107,59 @@ export default function CartPage() {
           )}
 
           {items.map((item) => (
-  <div
-    key={item.id}
-    className="flex items-center justify-between border-b py-4"
-  >
-    {/* LEFT */}
-    <div className="flex items-center gap-4">
-      {/* ✅ CHECKBOX */}
-      <input
-        type="checkbox"
-        checked={item.isSelected}
-        onChange={() => toggleSelect(item)}
-        className="w-4 h-4 accent-green-600"
-      />
+            <div
+              key={item.id}
+              className="flex items-center justify-between border-b py-4"
+            >
+              {/* LEFT */}
+              <div className="flex items-center gap-4">
+                {/* ✅ CHECKBOX */}
+                <input
+                  type="checkbox"
+                  checked={item.selected}
+                  onChange={() => toggleSelect(item)}
+                  className="w-4 h-4 accent-green-600"
+                />
 
-      <img
-        src={item.imageUrl}
-        className="w-16 h-16 object-cover rounded"
-      />
+                <img
+                  src={item.imageUrl || "/assets/no-image.png"}
+                  className="w-16 h-16 object-cover rounded"
+                />
 
-      <div>
-        <p className="font-medium">{item.name}</p>
-        <p className="text-sm text-gray-500">
-          {item.unitPrice.toLocaleString()}đ / {item.unit}
-        </p>
-      </div>
-    </div>
+                <div>
+                  <p className="font-medium">{item.productName}</p>
+                  <p className="text-sm text-gray-500">
+                    {item.unitPrice.toLocaleString()}đ / {item.unitName}
+                  </p>
+                </div>
+              </div>
 
-    {/* QUANTITY */}
-    <div className="flex items-center gap-2">
-      <button onClick={() => updateQuantity(item, item.quantity - 1)}>
-        <Minus size={16} />
-      </button>
-      <span>{item.quantity}</span>
-      <button onClick={() => updateQuantity(item, item.quantity + 1)}>
-        <Plus size={16} />
-      </button>
-    </div>
+              {/* QUANTITY */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateQuantity(item, item.quantity - 1)}
+                >
+                  <Minus size={16} />
+                </button>
+                <span>{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item, item.quantity + 1)}
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
 
-    {/* PRICE */}
-    <p className="text-green-600 font-semibold">
-      {(item.unitPrice * item.quantity).toLocaleString()}đ
-    </p>
+              {/* PRICE */}
+              <p className="text-green-600 font-semibold">
+                {(item.unitPrice * item.quantity).toLocaleString()}đ
+              </p>
 
-    {/* DELETE */}
-    <button onClick={() => removeItem(item.id)}>
-      <Trash2 size={16} />
-    </button>
-  </div>
-))}
-
+              {/* DELETE */}
+              <button onClick={() => removeItem(item.id)}>
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
         </div>
 
         {/* ================= RIGHT ================= */}
@@ -158,9 +176,18 @@ export default function CartPage() {
             </span>
           </p>
 
-          <button className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl">
-            Purchase
+          <button
+          disabled={subtotal === 0}
+          onClick={handlePurchase}
+          className={`mt-6 w-full py-3 rounded-xl text-white ${
+            subtotal === 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-700 hover:bg-green-800"
+          }`}
+        >
+          Purchase
           </button>
+
         </div>
       </div>
     </div>

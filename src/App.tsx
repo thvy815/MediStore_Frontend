@@ -1,10 +1,21 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import AdminLayout from "@/components/layout/AdminLayout";
-import CustomerLayout from "@/components/layout/CustomerLayout"
+import CustomerLayout from "@/components/layout/CustomerLayout";
+
 import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 import CustomerHome from "@/pages/customer/CustomerHome";
-import CartPage from "./pages/customer/Cart";
+import CartPage from "@/pages/customer/Cart";
+import SearchPage from "./pages/customer/SearchPage";
+
+import CheckoutPage from "@/pages/customer/checkout/CheckoutPage";
+import ShippingStep from "@/pages/customer/checkout/ShippingStep";
+import DeliveryStep from "@/pages/customer/checkout/DeliveryStep";
+import ReviewStep from "./pages/customer/checkout/ReviewStep";
+import PaymentStep from "./pages/customer/checkout/PaymentStep";
+
+import { CheckoutProvider } from "@/pages/customer/checkout/CheckoutContext";
 
 const App: React.FC = () => {
   return (
@@ -12,13 +23,27 @@ const App: React.FC = () => {
       {/* Redirect mặc định */}
       <Route path="/" element={<Navigate to="/customer/home" replace />} />
 
-      {/* CUSTOMER */}
-      <Route element={<CustomerLayout />}>
+      {/* ================= CUSTOMER ================= */}
+      <Route
+        element={
+          <CheckoutProvider>
+            <CustomerLayout />
+          </CheckoutProvider>
+        }
+      >
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/customer/home" element={<CustomerHome />} />
         <Route path="/cart" element={<CartPage />} />
+
+        {/* Checkout pages */}
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/shipping" element={<ShippingStep />} />
+        <Route path="/checkout/delivery" element={<DeliveryStep />} />
+         <Route path="/checkout/review" element={<ReviewStep />} /> 
+         <Route path="/checkout/payment" element={<PaymentStep />} /> 
       </Route>
-      
-      {/* Route chung với Layout */}
+
+      {/* ================= ADMIN ================= */}
       <Route element={<AdminLayout />}>
         <Route path="/admin/medicines" element={<MedicinesPage />} />
       </Route>
