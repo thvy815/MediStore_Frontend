@@ -1,4 +1,4 @@
-type InventoryTab = "IN_STOCK" | "EXPIRING" | "LOW";
+type InventoryTab = "IN_STOCK" | "EXPIRING" | "LOW_STOCK";
 
 interface Props {
   active: InventoryTab;
@@ -46,11 +46,11 @@ const InventoryStats = ({
 
       <button
         className={`${base} ${
-          active === "LOW"
+          active === "LOW_STOCK"
             ? "bg-green-500 text-white border-green-500"
             : "bg-white"
         }`}
-        onClick={() => onChange("LOW")}
+        onClick={() => onChange("LOW_STOCK")}
       >
         📉 Low Stock
         <span className="px-2 rounded-full bg-white/20">{lowStock}</span>

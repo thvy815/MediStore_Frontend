@@ -11,5 +11,5 @@ export const inventoryService = {
     api.get<InventoryBatchResponse[]>("/batches/low-stock"),
   // Còn hàng trong kho
   getInStock: () =>
-    api.get<InventoryBatchResponse[]>("/batches/products/in-stock"),
+    api.get<InventoryBatchResponse[]>("/batches/in-stock"),
 };

@@ -8,7 +8,7 @@ import { inventoryService } from "@/services/inventoryService";
 import type { InventoryBatchResponse } from "@/types/inventory";
 
 const InventoryPage: React.FC = () => {
-  const [active, setActive] = useState<"IN_STOCK" | "EXPIRING" | "LOW">("EXPIRING");
+  const [active, setActive] = useState<"IN_STOCK" | "EXPIRING" | "LOW_STOCK">("EXPIRING");
   const [inStock, setInStock] = useState<InventoryBatchResponse[]>([]);
   const [expiring, setExpiring] = useState<InventoryBatchResponse[]>([]);
   const [lowStock, setLowStock] = useState<InventoryBatchResponse[]>([]);

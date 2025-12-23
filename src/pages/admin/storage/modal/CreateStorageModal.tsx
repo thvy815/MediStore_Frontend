@@ -5,10 +5,12 @@ import { productService } from "@/services/productService";
 import { productUnitService } from "@/services/productUnitService";
 import { supplierService } from "@/services/supplierService";
 import { batchService } from "@/services/batchService";
+import { lawService } from "@/services/lawService"; // ✅ LAW
 
 import type { ProductResponse } from "@/types/product";
 import type { ProductUnitResponse } from "@/types/productUnit";
 import type { Supplier } from "@/types/supplier";
+import type { Law } from "@/types/law"; // ✅ LAW
 
 interface Props {
   onClose: () => void;
@@ -19,18 +21,22 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
   const [products, setProducts] = useState<ProductResponse[]>([]);
   const [units, setUnits] = useState<ProductUnitResponse[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [laws, setLaws] = useState<Law[]>([]); // ✅ LAW
 
   const [form, setForm] = useState({
     productId: "",
     productUnitId: "",
     supplierId: "",
     quantity: 0,
+    importPrice: 0,
     manufactureDate: "",
     expiryDate: "",
+    lawCode: "", // ✅ LAW
   });
 
-  const [selectedUnitId, setSelectedUnitId] = useState(""); // unit user chọn
-  const [smallestUnit, setSmallestUnit] = useState<ProductUnitResponse | null>(null);
+  const [selectedUnitId, setSelectedUnitId] = useState("");
+  const [smallestUnit, setSmallestUnit] =
+    useState<ProductUnitResponse | null>(null);
   const [showConverted, setShowConverted] = useState(false);
 
   useEffect(() => {
@@ -38,12 +44,15 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
   }, []);
 
   const fetchInit = async () => {
-    const [p, s] = await Promise.all([
+    const [p, s, l] = await Promise.all([
       productService.getAllAdmin(),
       supplierService.getAll(),
+      lawService.getAll(), // ✅ LAW
     ]);
+
     setProducts(p.data);
     setSuppliers(s.data);
+    setLaws(l.data);
   };
 
   // Khi chọn product → load unit
@@ -56,29 +65,46 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
     const res = await productUnitService.getByProduct(productId);
     setUnits(res.data);
 
-    // Lấy smallest unit giống update
-    const smallest = res.data.find(u => u.conversionFactor === 1) || res.data[0];
-    setSmallestUnit(smallest || null);
+    const smallest =
+      res.data.find((u) => u.conversionFactor === 1) || res.data[0];
 
     if (smallest) {
+      setSmallestUnit(smallest);
       setSelectedUnitId(smallest.id);
-      setForm(f => ({ ...f, productUnitId: smallest.id }));
+      setForm((f) => ({ ...f, productUnitId: smallest.id }));
     }
   };
 
-  // FE-only: quantity quy đổi sang smallest unit
+  // FE-only: quantity quy đổi
   const getConvertedQuantity = () => {
-    if (!selectedUnitId || !smallestUnit) return { unit: smallestUnit?.unitName || "", quantity: form.quantity };
-    const selectedUnit = units.find(u => u.id === selectedUnitId);
-    if (!selectedUnit) return { unit: smallestUnit.unitName, quantity: form.quantity };
+    if (!selectedUnitId || !smallestUnit)
+      return { unit: smallestUnit?.unitName || "", quantity: form.quantity };
 
-    const convertedQty = form.quantity * (selectedUnit.conversionFactor / smallestUnit.conversionFactor);
-    return { unit: smallestUnit.unitName, quantity: convertedQty };
+    const selectedUnit = units.find((u) => u.id === selectedUnitId);
+    if (!selectedUnit)
+      return { unit: smallestUnit.unitName, quantity: form.quantity };
+
+    return {
+      unit: smallestUnit.unitName,
+      quantity:
+        form.quantity *
+        (selectedUnit.conversionFactor / smallestUnit.conversionFactor),
+    };
   };
 
   const handleSubmit = async () => {
-    if (!form.productId || !form.productUnitId || !form.supplierId || !form.expiryDate) {
+    if (
+      !form.productId ||
+      !form.productUnitId ||
+      !form.supplierId ||
+      !form.expiryDate
+    ) {
       alert("Please fill required fields");
+      return;
+    }
+
+    if (form.importPrice <= 0) {
+      alert("Import price must be greater than 0");
       return;
     }
 
@@ -88,9 +114,11 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
         supplierId: form.supplierId,
         productUnitId: form.productUnitId,
         quantity: Number(form.quantity),
+        importPrice: Number(form.importPrice),
         manufactureDate: form.manufactureDate || undefined,
         expiryDate: form.expiryDate,
         batchNumber: `BATCH-${Date.now()}`,
+        lawCode: form.lawCode || undefined, // ✅ LAW
       });
 
       alert("Import batch success");
@@ -126,8 +154,10 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
             onChange={(e) => handleProductChange(e.target.value)}
           >
             <option value="" disabled>-- select product --</option>
-            {products.map(p => (
-              <option key={p.id} value={p.id}>{p.code} - {p.name}</option>
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.code} - {p.name}
+              </option>
             ))}
           </select>
 
@@ -138,24 +168,23 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
             value={selectedUnitId}
             onChange={(e) => {
               setSelectedUnitId(e.target.value);
-              setForm(f => ({ ...f, productUnitId: e.target.value }));
+              setForm((f) => ({ ...f, productUnitId: e.target.value }));
               setShowConverted(e.target.value !== smallestUnit?.id);
             }}
             disabled={!units.length}
           >
             <option value="" disabled>-- select unit --</option>
-            {units.map(u => (
+            {units.map((u) => (
               <option key={u.id} value={u.id}>{u.unitName}</option>
             ))}
           </select>
 
-          {/* FE-only converted quantity */}
           {showConverted && smallestUnit && (
             <>
               <label>Smallest Unit (FE-only)</label>
-              <input type="text" className="border rounded-lg p-2" value={getConvertedQuantity().unit} disabled />
+              <input className="border rounded-lg p-2" value={getConvertedQuantity().unit} disabled />
               <label>Converted Quantity (FE-only)</label>
-              <input type="number" className="border rounded-lg p-2" value={getConvertedQuantity().quantity} disabled />
+              <input className="border rounded-lg p-2" value={getConvertedQuantity().quantity} disabled />
             </>
           )}
 
@@ -164,10 +193,12 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
           <select
             className="border rounded-lg p-2"
             value={form.supplierId}
-            onChange={(e) => setForm(p => ({ ...p, supplierId: e.target.value }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, supplierId: e.target.value }))
+            }
           >
             <option value="" disabled>-- select supplier --</option>
-            {suppliers.map(s => (
+            {suppliers.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
@@ -178,40 +209,68 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
             type="number"
             className="border rounded-lg p-2"
             value={form.quantity}
-            onChange={(e) => setForm(p => ({ ...p, quantity: Number(e.target.value) }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, quantity: Number(e.target.value) }))
+            }
           />
 
-          {/* Manufacture Date */}
+          {/* Import Price */}
+          <label>Import Price</label>
+          <input
+            type="number"
+            className="border rounded-lg p-2"
+            value={form.importPrice}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, importPrice: Number(e.target.value) }))
+            }
+          />
+
+          {/* Law */}
+          <label>Law Code</label>
+          <select
+            className="border rounded-lg p-2 col-span-2"
+            value={form.lawCode}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, lawCode: e.target.value }))
+            }
+          >
+            <option value="">-- no law --</option>
+            {laws.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.code} - {l.title}
+              </option>
+            ))}
+          </select>
+
+          {/* Manufacture */}
           <label>Manufacture Date</label>
           <input
             type="date"
             className="border rounded-lg p-2"
             value={form.manufactureDate}
-            onChange={(e) => setForm(p => ({ ...p, manufactureDate: e.target.value }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, manufactureDate: e.target.value }))
+            }
           />
 
-          {/* Expiry Date */}
+          {/* Expiry */}
           <label>Expiry Date</label>
           <input
             type="date"
             className="border rounded-lg p-2"
             value={form.expiryDate}
-            onChange={(e) => setForm(p => ({ ...p, expiryDate: e.target.value }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, expiryDate: e.target.value }))
+            }
           />
         </div>
 
         {/* Footer */}
         <div className="flex gap-3 mt-6">
-          <button
-            onClick={handleSubmit}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg"
-          >
+          <button onClick={handleSubmit} className="bg-green-600 text-white px-4 py-2 rounded-lg">
             Import Batch
           </button>
-          <button
-            onClick={onClose}
-            className="border px-4 py-2 rounded-lg"
-          >
+          <button onClick={onClose} className="border px-4 py-2 rounded-lg">
             Cancel
           </button>
         </div>

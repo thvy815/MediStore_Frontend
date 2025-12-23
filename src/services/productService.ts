@@ -2,7 +2,8 @@ import { api } from "@/api/axios";
 import type { ProductRequest } from "@/types/product";
 
 export const productService = {
-  getAll: () => api.get("/products"),
+  // ADMIN
+  getAllAdmin: () => api.get("/products/admin"),
 
   search: (keyword: string) =>
     api.get(`/products/search?keyword=${keyword}`),
