@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 export default function ShippingStep() {
   const navigate = useNavigate();
@@ -10,10 +10,7 @@ export default function ShippingStep() {
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
-    address: "",
-    city: "",
-    district: "",
-    ward: "",
+    address: ""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,9 +23,6 @@ export default function ShippingStep() {
     if (!form.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!form.phone.trim()) newErrors.phone = "Phone number is required";
     if (!form.address.trim()) newErrors.address = "Address is required";
-    if (!form.city.trim()) newErrors.city = "City is required";
-    if (!form.district.trim()) newErrors.district = "District is required";
-    if (!form.ward.trim()) newErrors.ward = "Ward is required";
 
     setErrors(newErrors);
 
@@ -50,12 +44,6 @@ export default function ShippingStep() {
           <Input label="Full Name" name="fullName" onChange={handleChange} error={errors.fullName} />
           <Input label="Phone Number" name="phone" onChange={handleChange} error={errors.phone} />
           <Input label="Address" name="address" onChange={handleChange} error={errors.address}/>
-
-          <div className="grid grid-cols-3 gap-4">
-            <Input label="City" name="city" onChange={handleChange} error={errors.city}/>
-            <Input label="District" name="district" onChange={handleChange} error={errors.district}/>
-            <Input label="Ward" name="ward" onChange={handleChange} error={errors.ward}/>
-          </div>
 
           <button
             onClick={handleContinue}

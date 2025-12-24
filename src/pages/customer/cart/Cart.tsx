@@ -3,7 +3,7 @@ import { Minus, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cartService } from "@/services/cartService";
 import type { CartItem } from "@/types/cart";
-import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
+import { useCheckout } from "@/contexts/CheckoutContext";
 import { getCurrentUser } from "@/utils/auth";
 
 export default function CartPage() {
@@ -132,39 +132,39 @@ const handlePurchase = () => {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between border-b py-4"
+                className="flex items-center justify-start border-b py-4 gap-4"
               >
                 {/* LEFT */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
                   {/* ✅ CHECKBOX */}
                   <input
                     type="checkbox"
                     checked={item.selected}
                     onChange={() => toggleSelect(item)}
-                    className="w-4 h-4 accent-green-600"
+                    className="w-4 h-4 accent-green-600 flex-shrink-0"
                   />
 
                   <img
                     src={item.imageUrl || "/assets/no-image.png"}
-                    className="w-16 h-16 object-cover rounded"
+                    className="w-16 h-16 object-cover rounded flex-shrink-0"
                   />
 
-                  <div>
-                    <p className="font-medium">{item.productName}</p>
-                    <p className="text-sm text-gray-500">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{item.productName}</p>
+                    <p className="text-sm text-gray-500 truncate">
                       {item.unitPrice.toLocaleString()}đ / {item.unitName}
                     </p>
                   </div>
                 </div>
 
                 {/* QUANTITY */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-24 justify-center flex-shrink-0">
                   <button
                     onClick={() => updateQuantity(item, item.quantity - 1)}
                   >
                     <Minus size={16} />
                   </button>
-                  <span>{item.quantity}</span>
+                  <span className="w-6 text-center">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item, item.quantity + 1)}
                   >
@@ -173,14 +173,18 @@ const handlePurchase = () => {
                 </div>
 
                 {/* PRICE */}
-                <p className="text-green-600 font-semibold">
-                  {(item.unitPrice * item.quantity).toLocaleString()}đ
-                </p>
+                <div className="w-32 text-right flex-shrink-0">
+                  <p className="text-green-600 font-semibold">
+                    {(item.unitPrice * item.quantity).toLocaleString()}đ
+                  </p>
+                </div>
 
                 {/* DELETE */}
-                <button onClick={() => removeItem(item.id)}>
-                  <Trash2 size={16} />
-                </button>
+                <div className="flex-shrink-0">
+                  <button onClick={() => removeItem(item.id)}>
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

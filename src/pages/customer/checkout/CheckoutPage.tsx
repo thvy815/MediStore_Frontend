@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useCheckout } from "./CheckoutContext";
+import { useCheckout } from "../../../contexts/CheckoutContext";
 
 export default function CheckoutLayout() {
   const navigate = useNavigate();

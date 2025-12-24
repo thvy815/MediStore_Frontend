@@ -15,7 +15,7 @@ import DeliveryStep from "@/pages/customer/checkout/DeliveryStep";
 import ReviewStep from "./pages/customer/checkout/ReviewStep";
 import PaymentStep from "./pages/customer/checkout/PaymentStep";
 
-import { CheckoutProvider } from "@/pages/customer/checkout/CheckoutContext";
+import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import RequireAdmin from "./components/auth/RequireAdmin";
 
 const App = () => {

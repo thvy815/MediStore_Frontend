@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 export default function DeliveryStep() {
   const navigate = useNavigate();

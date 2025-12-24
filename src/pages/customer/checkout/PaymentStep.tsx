@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCheckout } from "./CheckoutContext";
+import { useCheckout } from "../../../contexts/CheckoutContext";
 import { orderService } from "@/services/orderService";
 
 export default function PaymentStep() {

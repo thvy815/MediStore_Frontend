@@ -12,9 +12,6 @@ export type ShippingInfo = {
   fullName: string;
   phone: string;
   address: string;
-  city: string;
-  district: string;
-  ward: string;
 };
 
 export type DeliveryInfo = {

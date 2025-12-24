@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 export default function ReviewStep() {
   const navigate = useNavigate();
@@ -29,9 +29,6 @@ export default function ReviewStep() {
                 <p><b>Name:</b> {shippingInfo.fullName}</p>
                 <p><b>Phone:</b> {shippingInfo.phone}</p>
                 <p><b>Address:</b> {shippingInfo.address}</p>
-                <p><b>Ward:</b> {shippingInfo.ward}</p>
-                <p><b>District:</b> {shippingInfo.district}</p>
-                <p><b>City:</b> {shippingInfo.city}</p>
             </section>
             )}
 
