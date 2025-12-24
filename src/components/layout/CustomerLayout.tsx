@@ -1,18 +1,23 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "@/components/navigationBar/CustomerNavBar"; // navbar customer
+import CustomerHeader from "@/components/layout/CustomerHeader";
+import CustomerNavbar from "@/components/navigationBar/CustomerNavbar";
 import Footer from "./Footer";
 
 const CustomerLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Customer Navbar */}
-      <Navbar />
+    <div className="flex flex-col min-h-screen">      
+      {/* Header */}
+      <CustomerHeader />
+
+      {/* Navbar */}
+      <CustomerNavbar />
 
       {/* Main content */}
       <main className="flex-1 bg-gray-50">
         <Outlet />
       </main>
 
+      {/* Footer */}
       <Footer />
     </div>
   );

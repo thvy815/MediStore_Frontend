@@ -1,36 +1,27 @@
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom"; // thêm Outlet
-import Header from "./Header";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Header from "./AdminHeader";
 import Footer from "./Footer";
 import TopNavbar from "../navigationBar/AdminNavbar";
 
-// Không cần interface LayoutProps nữa, vì Outlet sẽ render children
-const Layout: React.FC = () => {
-  const [user, setUser] = useState<{ name: string } | undefined>(undefined);
-
-  const handleLogin = () => {
-    setUser({ name: "Nguyen Van A" }); // demo login
-  };
-
-  const handleLogout = () => setUser(undefined);
-
+const AdminLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
-        {/* Header */}
-        <Header user={user} onLogout={handleLogout} />
+      
+      {/* Header tự lấy auth */}
+      <Header />
 
-        {/* Navbar */}
-        <TopNavbar />
+      {/* Navbar */}
+      <TopNavbar />
 
-        {/* Main content area */}
-        <main className="flex-1 p-6 bg-gray-50">
-            <Outlet /> {/* route con sẽ render ở đây */}
-        </main>
+      {/* Main content */}
+      <main className="flex-1 p-6 bg-gray-50">
+        <Outlet />
+      </main>
 
-        {/* Footer */}
-        <Footer />
+      <Footer />
     </div>
   );
 };
 
-export default Layout;
+export default AdminLayout;

@@ -16,6 +16,7 @@ import ReviewStep from "./pages/customer/checkout/ReviewStep";
 import PaymentStep from "./pages/customer/checkout/PaymentStep";
 
 import { CheckoutProvider } from "@/pages/customer/checkout/CheckoutContext";
+import RequireAdmin from "./components/auth/RequireAdmin";
 
 const App = () => {
   return (
@@ -39,12 +40,18 @@ const App = () => {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/checkout/shipping" element={<ShippingStep />} />
         <Route path="/checkout/delivery" element={<DeliveryStep />} />
-         <Route path="/checkout/review" element={<ReviewStep />} /> 
-         <Route path="/checkout/payment" element={<PaymentStep />} /> 
+        <Route path="/checkout/review" element={<ReviewStep />} /> 
+        <Route path="/checkout/payment" element={<PaymentStep />} /> 
       </Route>
 
       {/* ================= ADMIN ================= */}
-      <Route element={<AdminLayout />}>
+      <Route
+        element={
+          <RequireAdmin>
+            <AdminLayout />
+          </RequireAdmin>
+        }
+      >
         <Route path="/admin/medicines" element={<MedicinesPage />} />
         <Route path="/admin/storage" element={<StoragePage />} />
         <Route path="/admin/inventory" element={<InventoryPage />} />
