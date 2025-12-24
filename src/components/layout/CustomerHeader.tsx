@@ -60,7 +60,11 @@ const CustomerHeader = () => {
                   {user.fullName}
                 </span>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    // Hiển thị confirm dialog trước khi logout
+                    const confirmed = window.confirm("Are you sure you want to logout?");
+                    if (confirmed) logout();
+                  }}
                   className="bg-green-600 text-white px-4 py-2 rounded-full text-sm hover:bg-green-700"
                 >
                   Logout

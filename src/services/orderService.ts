@@ -1,7 +1,5 @@
 import { api } from "@/api/axios";
-
-// 🔧 DEV USER ID (tạm thời – chờ login thật)
-const DEV_USER_ID = "ee38ca3d-ec15-47bd-833d-5cc21d974df1";
+import { getUserId } from "@/utils/auth";
 
 export const orderService = {
   /**
@@ -12,9 +10,13 @@ export const orderService = {
     productId: string;
     productUnitId: string;
     quantity: number;
-  }[]) =>
-    api.post("/orders", {
-      userId: DEV_USER_ID, // ✅ giống cartService
+  }[]) => {
+    const userId = getUserId();
+    if (!userId) return Promise.reject("NOT_LOGIN");
+
+    return api.post("/orders", {
+      userId, // ✅ giống cartService
       items,
-    }),
+    });
+  },
 };

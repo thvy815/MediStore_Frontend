@@ -106,7 +106,7 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
           disabled={loading}
           className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-full font-medium"
         >
-          {loading ? "Creating..." : "Continue"}
+          {loading ? "Creating..." : "Register"}
         </button>
 
         <p className="text-sm text-center">

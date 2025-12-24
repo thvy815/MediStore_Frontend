@@ -20,7 +20,7 @@ const MedicinesPage: React.FC = () => {
   // Load all products
   const fetchProducts = async () => {
     try {
-      const res = await productService.getAll();
+      const res = await productService.getAllAdmin();
       setProducts(res.data);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -36,7 +36,7 @@ const MedicinesPage: React.FC = () => {
     if (!searchKeyword.trim()) return fetchProducts();
 
     try {
-      const res = await productService.search(searchKeyword);
+      const res = await productService.searchMedicine(searchKeyword);
       setProducts(res.data);
     } catch (e) {
       console.error("Search error:", e);

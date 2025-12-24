@@ -23,7 +23,11 @@ const Header: React.FC = () => {
                 {user.fullName}
               </span>
               <button
-                onClick={logout}
+                onClick={() => {
+                  // Hiển thị confirm dialog trước khi logout
+                  const confirmed = window.confirm("Are you sure you want to logout?");
+                  if (confirmed) logout();
+                }}
                 className="bg-green-700 text-white px-4 py-2 rounded"
               >
                 Logout

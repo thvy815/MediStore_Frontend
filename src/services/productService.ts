@@ -2,13 +2,9 @@ import { api } from "@/api/axios";
 import type { ProductRequest } from "@/types/product";
 
 export const productService = {
-  // ADMIN
   getAllAdmin: () => api.get("/products/admin"),
 
-  // ===== EXISTING (GIỮ NGUYÊN) =====
-  getAll: () => api.get("/products"),
-
-  search: (keyword: string) =>
+  searchMedicine: (keyword: string) =>
     api.get(`/products/search?keyword=${keyword}`),
 
   create: (data: ProductRequest) =>

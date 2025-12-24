@@ -16,7 +16,7 @@ export default function SearchPage() {
   const loadSearch = async () => {
     setLoading(true);
     try {
-      const res = await productService.search(keyword);
+      const res = await productService.searchMedicine(keyword);
 
       const mappedProducts = res.data.map((p: any) => {
         const defaultUnit =

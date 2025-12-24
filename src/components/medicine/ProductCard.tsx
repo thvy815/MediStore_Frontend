@@ -55,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
         className="bg-green-600 text-white text-sm px-4 py-2 rounded-full hover:bg-green-700"
         onClick={handleBuyNow}
       >
-        Buy now
+        Purchase
       </button>
     </div>
   );
