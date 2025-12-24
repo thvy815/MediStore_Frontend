@@ -39,3 +39,20 @@ export interface ProductResponse {
   isActive: boolean;
   units: ProductUnitResponse[];
 }
+
+export interface ProductView {
+  id: string;
+  name: string;
+  imageUrl: string;
+  unit: string;
+  price: number;
+  productUnitId: string;
+}
+
+export interface ProductUnitView {
+  id: string;
+  productId: string;
+  unit: string;
+  price: number;
+  isActive: boolean;
+}

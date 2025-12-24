@@ -8,3 +8,10 @@ export interface CategoryCreateRequest {
   name: string;
   description?: string;
 }
+
+export interface CategoryView {
+  id: string;
+  name: string;
+  description?: string;
+}
+
