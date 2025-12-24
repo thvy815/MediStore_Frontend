@@ -5,6 +5,7 @@ import { useCheckout } from "@/pages/customer/checkout/CheckoutContext";
 export default function ShippingStep() {
   const navigate = useNavigate();
   const { setShippingInfo } = useCheckout();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [form, setForm] = useState({
     fullName: "",
@@ -20,6 +21,20 @@ export default function ShippingStep() {
   };
 
   const handleContinue = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!form.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!form.phone.trim()) newErrors.phone = "Phone number is required";
+    if (!form.address.trim()) newErrors.address = "Address is required";
+    if (!form.city.trim()) newErrors.city = "City is required";
+    if (!form.district.trim()) newErrors.district = "District is required";
+    if (!form.ward.trim()) newErrors.ward = "Ward is required";
+
+    setErrors(newErrors);
+
+    // ❌ nếu còn lỗi → không cho đi tiếp
+    if (Object.keys(newErrors).length > 0) return;
+
     // ✅ lưu vào context
     setShippingInfo(form);
 
@@ -28,20 +43,18 @@ export default function ShippingStep() {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-6">
-      {/* ================= LEFT ================= */}
-      <div className="col-span-2 bg-white rounded-xl p-6">
+    <>
         <h3 className="font-semibold mb-4">🚚 Enter shipping address</h3>
 
         <div className="space-y-4">
-          <Input label="Full Name" name="fullName" onChange={handleChange} />
-          <Input label="Phone Number" name="phone" onChange={handleChange} />
-          <Input label="Address" name="address" onChange={handleChange} />
+          <Input label="Full Name" name="fullName" onChange={handleChange} error={errors.fullName} />
+          <Input label="Phone Number" name="phone" onChange={handleChange} error={errors.phone} />
+          <Input label="Address" name="address" onChange={handleChange} error={errors.address}/>
 
           <div className="grid grid-cols-3 gap-4">
-            <Input label="City" name="city" onChange={handleChange} />
-            <Input label="District" name="district" onChange={handleChange} />
-            <Input label="Ward" name="ward" onChange={handleChange} />
+            <Input label="City" name="city" onChange={handleChange} error={errors.city}/>
+            <Input label="District" name="district" onChange={handleChange} error={errors.district}/>
+            <Input label="Ward" name="ward" onChange={handleChange} error={errors.ward}/>
           </div>
 
           <button
@@ -51,11 +64,7 @@ export default function ShippingStep() {
             Continue to Delivery Method
           </button>
         </div>
-      </div>
-
-      {/* ================= RIGHT ================= */}
-      <OrderSummary />
-    </div>
+      </>
   );
 }
 
@@ -63,10 +72,12 @@ function Input({
   label,
   name,
   onChange,
+  error,
 }: {
   label: string;
   name: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }) {
   return (
     <div>
@@ -76,45 +87,17 @@ function Input({
       <input
         name={name}
         onChange={onChange}
-        className="mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-600"
+        className={`mt-1 w-full rounded-lg px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1
+          ${
+            error
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 focus:ring-green-600"
+          }`}
       />
+      {error && (
+        <p className="text-xs text-red-500 mt-1">{error}</p>
+      )}
     </div>
   );
 }
 
-/* ================= ORDER SUMMARY ================= */
- function OrderSummary() {
-  const { selectedItems, delivery } = useCheckout();
-
-  const subtotal = selectedItems.reduce(
-    (sum, i) => sum + i.unitPrice * i.quantity,
-    0
-  );
-
-  const total = subtotal + delivery.fee;
-
-  return (
-    <div className="bg-white rounded-xl p-6">
-      <h3 className="font-semibold mb-4">Order Summary</h3>
-
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span>Subtotal ({selectedItems.length} items)</span>
-          <span>{subtotal.toLocaleString()}đ</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>Delivery Fee</span>
-          <span>{delivery.fee.toLocaleString()}đ</span>
-        </div>
-
-        <hr />
-
-        <div className="flex justify-between font-semibold text-green-700">
-          <span>Total</span>
-          <span>{total.toLocaleString()}đ</span>
-        </div>
-      </div>
-    </div>
-  );
-}

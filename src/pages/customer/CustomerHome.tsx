@@ -106,47 +106,48 @@ export default function CustomerHome() {
 
   // ================= RENDER =================
   return (
-    <div className="min-h-screen bg-[#f6faf7]">
-      {/* ================= HERO CAROUSEL ================= */}
-<section className="px-6 py-10">
-  <HomeCarousel />
-</section>
+    <div className="min-h-screen">
+      <div className="max-w-[1400px] mx-auto px-6">
+        {/* ================= HERO CAROUSEL ================= */}
+        <section className="py-10">
+          <HomeCarousel />
+        </section>
 
-
-      {/* ================= BEST SELLING ================= */}
-      <section className="px-6 pb-16">
-        <div className="bg-[#e9f6ec] rounded-2xl p-8 relative">
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-2 rounded-md font-semibold">
-            Best-Selling Products
-          </div>
-
-          <ChevronLeft className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer" />
-          <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" />
-
-          {loading ? (
-            <p className="mt-10 text-center">Loading...</p>
-          ) : (
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                />
-              ))}
+        {/* ================= BEST SELLING ================= */}
+        <section className="pb-16">
+          <div className="bg-[#e9f6ec] rounded-2xl p-8 relative">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-2 rounded-md font-semibold">
+              Best-Selling Products
             </div>
-          )}
-        </div>
-      </section>
 
-      {/* ================= NEW PRODUCTS ================= */}
-      <NewProductsSection products={products} loading={loading} />
+            <ChevronLeft className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer" />
+            <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" />
 
-      {/* ================= FEATURED CATEGORIES ================= */}
-      <FeaturedCategories categories={categories} />
-      
+            {loading ? (
+              <p className="mt-10 text-center">Loading...</p>
+            ) : (
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
-      {/* ================= FAVORITE BRANDS ================= */}
-      <FavoriteBrands brands={brands} />
+        {/* ================= NEW PRODUCTS ================= */}
+        <NewProductsSection products={products} loading={loading} />
+
+        {/* ================= FEATURED CATEGORIES ================= */}
+        <FeaturedCategories categories={categories} />
+        
+
+        {/* ================= FAVORITE BRANDS ================= */}
+        <FavoriteBrands brands={brands} />
+      </div>
     </div>
   );
 }

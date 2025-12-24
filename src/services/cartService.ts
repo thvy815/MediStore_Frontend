@@ -1,20 +1,20 @@
 import { api } from "@/api/axios";
 import type { CartItem } from "@/types/cart";
-
-// 🔧 DEV USER ID (tạm thời – chờ login thật)
-const DEV_USER_ID = "ee38ca3d-ec15-47bd-833d-5cc21d974df1";
+import { getUserId } from "@/utils/auth";
 
 export const cartService = {
   /**
    * GET giỏ hàng
    * GET /api/cart
    */
-  getCart: () =>
-    api.get<CartItem[]>("/cart", {
-      params: {
-        userId: DEV_USER_ID,
-      },
-    }),
+  getCart: () => {
+    const userId = getUserId();
+    if (!userId) return Promise.reject("NOT_LOGIN");
+
+    return api.get<CartItem[]>("/cart", {
+      params: { userId },
+    });
+  },
 
   /**
    * ADD TO CART
@@ -24,10 +24,14 @@ export const cartService = {
     productId: string;
     productUnitId: string;
     quantity: number;
-  }) =>
-    api.post("/cart/add", data, {
-      params: { userId: DEV_USER_ID }, // ✅ query param
-    }),
+  }) => {
+    const userId = getUserId();
+    if (!userId) return Promise.reject("NOT_LOGIN");
+
+    return api.post("/cart/add", data, {
+      params: { userId }, 
+    });
+  },
 
   /**
    * UPDATE item trong cart
@@ -40,20 +44,26 @@ export const cartService = {
       productUnitId?: string;
       selected?: boolean;
     }
-  ) =>
-    api.put(`/cart/item/${id}`, {
-      ...data,
-      userId: DEV_USER_ID,
-    }),
+  ) => {
+    const userId = getUserId();
+    if (!userId) return Promise.reject("NOT_LOGIN");
 
+    return api.put(`/cart/item/${id}`, {
+      ...data,
+      userId,
+    });
+  },
+    
   /**
    * DELETE item
    * DELETE /api/cart/item/{id}
    */
-  deleteItem: (id: string) =>
-    api.delete(`/cart/item/${id}`, {
-      data: {
-        userId: DEV_USER_ID,
-      },
-    }),
+  deleteItem: (id: string) => {
+    const userId = getUserId();
+    if (!userId) return Promise.reject("NOT_LOGIN");
+
+    return api.delete(`/cart/item/${id}`, {
+      data: { userId },
+    });
+  },
 };

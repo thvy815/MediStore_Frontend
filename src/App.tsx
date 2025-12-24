@@ -7,7 +7,7 @@ import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 import StoragePage from "@/pages/admin/storage/StoragePage";
 import InventoryPage from "@/pages/admin/storage/TrackInventoryPage";
 import CustomerHome from "@/pages/customer/CustomerHome";
-import CartPage from "@/pages/customer/Cart";
+import CartPage from "@/pages/customer/cart/Cart";
 import SearchPage from "./pages/customer/SearchPage";
 import CheckoutPage from "@/pages/customer/checkout/CheckoutPage";
 import ShippingStep from "@/pages/customer/checkout/ShippingStep";
@@ -37,11 +37,13 @@ const App = () => {
         <Route path="/cart" element={<CartPage />} />
 
         {/* Checkout pages */}
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/checkout/shipping" element={<ShippingStep />} />
-        <Route path="/checkout/delivery" element={<DeliveryStep />} />
-        <Route path="/checkout/review" element={<ReviewStep />} /> 
-        <Route path="/checkout/payment" element={<PaymentStep />} /> 
+        <Route path="/checkout" element={<CheckoutPage />}>
+          <Route index element={<Navigate to="shipping" replace />} />
+          <Route path="shipping" element={<ShippingStep />} />
+          <Route path="delivery" element={<DeliveryStep />} />
+          <Route path="review" element={<ReviewStep />} />
+          <Route path="payment" element={<PaymentStep />} />
+        </Route>
       </Route>
 
       {/* ================= ADMIN ================= */}

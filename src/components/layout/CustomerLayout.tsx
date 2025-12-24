@@ -5,7 +5,7 @@ import Footer from "./Footer";
 
 const CustomerLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">      
+    <div className="flex flex-col min-h-screen bg-[#f6faf7]">      
       {/* Header */}
       <CustomerHeader />
 
@@ -13,7 +13,7 @@ const CustomerLayout = () => {
       <CustomerNavbar />
 
       {/* Main content */}
-      <main className="flex-1 bg-gray-50">
+      <main className="flex-1">
         <Outlet />
       </main>
 

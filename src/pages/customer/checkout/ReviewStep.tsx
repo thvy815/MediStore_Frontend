@@ -17,16 +17,6 @@ export default function ReviewStep() {
         <span>Back to Delivery</span>
       </button>
 
-      {/* STEPS */}
-      <div className="mb-6 flex gap-6 text-sm">
-        <span className="text-green-600 font-semibold">1 Shipping</span>
-        <span className="text-green-600 font-semibold">2 Delivery</span>
-        <span className="text-green-600 font-semibold">3 Review</span>
-        <span className="text-gray-400">4 Payment</span>
-      </div>
-
-      <div className="grid grid-cols-3 gap-6">
-        {/* ================= LEFT ================= */}
         <div className="col-span-2 bg-white rounded-xl p-6 space-y-6">
           <h3 className="font-semibold text-lg">
             Review Order Information
@@ -94,47 +84,6 @@ export default function ReviewStep() {
             Continue to Payment
           </button>
         </div>
-
-        {/* ================= RIGHT ================= */}
-        <OrderSummary />
       </div>
-    </div>
-  );
-}
-
-/* ================= ORDER SUMMARY (INLINE) ================= */
-function OrderSummary() {
-  const { selectedItems, delivery } = useCheckout();
-
-  const subtotal = selectedItems.reduce(
-    (sum, i) => sum + i.unitPrice * i.quantity,
-    0
-  );
-
-  const total = subtotal + delivery.fee;
-
-  return (
-    <div className="bg-white rounded-xl p-6">
-      <h3 className="font-semibold mb-4">Order Summary</h3>
-
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span>Subtotal ({selectedItems.length} items)</span>
-          <span>{subtotal.toLocaleString()}đ</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>Delivery Fee</span>
-          <span>{delivery.fee.toLocaleString()}đ</span>
-        </div>
-
-        <hr />
-
-        <div className="flex justify-between font-semibold text-green-700">
-          <span>Total</span>
-          <span>{total.toLocaleString()}đ</span>
-        </div>
-      </div>
-    </div>
   );
 }

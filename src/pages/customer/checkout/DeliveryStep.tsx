@@ -6,18 +6,9 @@ export default function DeliveryStep() {
   const navigate = useNavigate();
 
   const {
-    selectedItems,
     delivery,
     setDelivery,
   } = useCheckout();
-
-  // ================= CALCULATE =================
-  const subtotal = selectedItems.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  );
-
-  const total = subtotal + delivery.fee;
 
   // ================= HANDLERS =================
   const chooseStandard = () => {
@@ -40,18 +31,6 @@ export default function DeliveryStep() {
         <span>Back to Shipping</span>
       </button>
 
-      {/* STEPS */}
-      <div className="mb-6">
-        <div className="flex items-center gap-6 text-sm">
-          <span className="text-green-600 font-semibold">1 Shipping</span>
-          <span className="text-green-600 font-semibold">2 Delivery</span>
-          <span className="text-gray-400">3 Review</span>
-          <span className="text-gray-400">4 Payment</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-6">
-        {/* ================= LEFT ================= */}
         <div className="col-span-2 bg-white rounded-xl p-6">
           <h3 className="font-semibold mb-4">
             🚚 Choose delivery method
@@ -108,31 +87,6 @@ export default function DeliveryStep() {
             Continue to Review
           </button>
         </div>
-
-        {/* ================= RIGHT ================= */}
-        <div className="bg-white rounded-xl p-6">
-          <h3 className="font-semibold mb-4">Order Summary</h3>
-
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Subtotal ({selectedItems.length} items)</span>
-              <span>{subtotal.toLocaleString()}đ</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Delivery Fee</span>
-              <span>{delivery.fee.toLocaleString()}đ</span>
-            </div>
-
-            <hr />
-
-            <div className="flex justify-between font-semibold text-green-700">
-              <span>Total</span>
-              <span>{total.toLocaleString()}đ</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

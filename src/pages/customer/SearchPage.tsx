@@ -49,22 +49,24 @@ export default function SearchPage() {
 
 
   return (
-    <div className="px-6 py-10 min-h-screen bg-[#f6faf7]">
-      <h2 className="text-xl font-semibold mb-6">
-        Search results for "{keyword}"
-      </h2>
+    <div className="min-h-screen">
+      <div className="max-w-[1400px] mx-auto px-6 pt-10">
+        <h2 className="text-xl font-semibold mb-6">
+          Search results for "{keyword}"
+        </h2>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : products.length === 0 ? (
-        <p>No products found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <p>Loading...</p>
+        ) : products.length === 0 ? (
+          <p>No products found.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
