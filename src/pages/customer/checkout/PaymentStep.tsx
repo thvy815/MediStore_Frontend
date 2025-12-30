@@ -1,45 +1,25 @@
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCheckout } from "../../../contexts/CheckoutContext";
-import { orderService } from "@/services/orderService";
+
 
 export default function PaymentStep() {
   const navigate = useNavigate();
-  const { selectedItems } = useCheckout();
 
   const [paymentMethod, setPaymentMethod] =
     useState<"online" | "cod">("cod");
 
-  const subtotal = selectedItems.reduce(
-    (sum, i) => sum + i.unitPrice * i.quantity,
-    0
-  );
-
-  const handleConfirmOrder = async () => {
-    if (selectedItems.length === 0) {
-      alert("No items selected");
-      return;
-    }
-
-    try {
-      await orderService.createOrder(
-        selectedItems.map((i) => ({
-          productId: i.productId,
-          productUnitId: i.productUnitId,
-          quantity: i.quantity,
-        }))
-      );
-
-      alert("Order created successfully!");
-      navigate("/customer/home");
-    } catch (err) {
-      console.error(err);
-      alert("Create order failed");
-    }
-  };
-
   return (
     <>
+    {/* BACK */}
+      <button
+        onClick={() => navigate("/checkout/delivery")}
+        className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-4"
+      >
+        <ArrowLeft size={18} />
+        <span>Back to Delivery</span>
+      </button>
+      
       <h3 className="font-semibold mb-4 text-lg">
         💳 Choose payment method
       </h3>
@@ -69,12 +49,11 @@ export default function PaymentStep() {
       </div>
 
       <button
-        onClick={handleConfirmOrder}
-        disabled={subtotal === 0}
-        className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800 disabled:bg-gray-400"
-      >
-        Confirm Order
-      </button>
+            onClick={() => navigate("/checkout/review")}
+            className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800"
+          >
+            Continue
+          </button>
     </>
   );
 }

@@ -81,10 +81,10 @@ export default function DeliveryStep() {
           </div>
 
           <button
-            onClick={() => navigate("/checkout/review")}
+            onClick={() => navigate("/checkout/payment")}
             className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800"
           >
-            Continue to Review
+            Continue
           </button>
         </div>
     </div>

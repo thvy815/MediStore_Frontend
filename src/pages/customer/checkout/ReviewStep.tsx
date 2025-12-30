@@ -1,20 +1,56 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { orderService } from "@/services/orderService";
+import { useState } from "react";
 
 export default function ReviewStep() {
   const navigate = useNavigate();
   const { selectedItems, shippingInfo, delivery } = useCheckout();
+  const [loading, setLoading] = useState(false);
+
+  const subtotal = selectedItems.reduce(
+    (sum, i) => sum + i.unitPrice * i.quantity,
+    0
+  );
+  const total = subtotal + delivery.fee;
+
+  const handleConfirmOrder = async () => {
+    if (selectedItems.length === 0) {
+      alert("No items selected");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await orderService.createOrder(
+        selectedItems.map((i) => ({
+          productId: i.productId,
+          productUnitId: i.productUnitId,
+          quantity: i.quantity,
+        }))
+      );
+
+      alert("Order placed successfully");
+      navigate("/customer/home");
+    } catch (err) {
+      console.error(err);
+      alert("Create order failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen px-8 py-6">
       {/* BACK */}
       <button
-        onClick={() => navigate("/checkout/delivery")}
+        onClick={() => navigate("/checkout/payment")}
         className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-4"
       >
         <ArrowLeft size={18} />
-        <span>Back to Delivery</span>
+        <span>Back to Payment</span>
       </button>
 
         <div className="col-span-2 bg-white rounded-xl p-6 space-y-6">
@@ -67,18 +103,51 @@ export default function ReviewStep() {
           {/* DELIVERY */}
           <section className="bg-gray-50 rounded-lg p-4 text-sm">
             <h4 className="font-medium mb-2">Delivery Method</h4>
-            <p>
-              {delivery.id === "standard"
-                ? "Standard Delivery (3–5 days)"
-                : "Express Delivery (1–2 days)"}
-            </p>
+
+            <div className="flex justify-between">
+              <span>
+                {delivery.id === "standard"
+                  ? "Standard Delivery (3–5 days)"
+                  : "Express Delivery (1–2 days)"}
+              </span>
+
+              <span className="font-medium">
+                {delivery.fee.toLocaleString()}đ
+              </span>
+            </div>
+          </section>
+
+          {/* ORDER SUMMARY */}
+          <section className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>{subtotal.toLocaleString()}đ</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Delivery Fee</span>
+              <span>{delivery.fee.toLocaleString()}đ</span>
+            </div>
+
+            <hr />
+
+            <div className="flex justify-between font-semibold text-green-700 text-base">
+              <span>Total</span>
+              <span>{total.toLocaleString()}đ</span>
+            </div>
           </section>
 
           <button
-            onClick={() => navigate("/checkout/payment")}
-            className="mt-6 w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800"
+            onClick={handleConfirmOrder}
+            disabled={subtotal === 0 || loading}
+            className={`mt-6 w-full py-3 rounded-xl text-white transition
+            ${
+              loading || subtotal === 0
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-700 hover:bg-green-800"
+            }`}
           >
-            Continue to Payment
+            {loading ? "Placing order..." : "Confirm Order"}
           </button>
         </div>
       </div>

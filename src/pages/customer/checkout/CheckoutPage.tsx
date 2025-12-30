@@ -9,8 +9,8 @@ export default function CheckoutLayout() {
   const stepMap: Record<string, number> = {
     shipping: 1,
     delivery: 2,
-    review: 3,
-    payment: 4,
+    review: 4,
+    payment: 3,
   };
 
   const currentStep =
@@ -35,9 +35,9 @@ export default function CheckoutLayout() {
             <Line />
             <Step index={2} label="Delivery" active={currentStep >= 2} />
             <Line />
-            <Step index={3} label="Review" active={currentStep >= 3} />
+            <Step index={3} label="Payment" active={currentStep >= 3} />
             <Line />
-            <Step index={4} label="Payment" active={currentStep >= 4} />
+            <Step index={4} label="Review" active={currentStep >= 4} />
           </div>
         </div>
 
@@ -90,6 +90,36 @@ function OrderSummary() {
     <div className="bg-white rounded-xl p-6 h-fit">
       <h3 className="font-semibold mb-4">Order Summary</h3>
 
+      {/* ===== SELECTED PRODUCTS LIST ===== */}
+      {selectedItems.length === 0 ? (
+        <p className="text-sm text-gray-500 mb-4">
+          No products selected
+        </p>
+      ) : (
+        <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
+          {selectedItems.map((item) => (
+            <div
+              key={item.id}
+              className="flex justify-between items-start text-sm"
+            >
+              <div className="min-w-0 pr-2">
+                <p className="font-medium truncate">
+                  {item.productName}
+                </p>
+                <p className="text-gray-500">
+                  {item.quantity} × {item.unitPrice.toLocaleString()}đ
+                </p>
+              </div>
+
+              <span className="font-medium text-green-700 whitespace-nowrap">
+                {(item.quantity * item.unitPrice).toLocaleString()}đ
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ===== PRICE SUMMARY ===== */}
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span>Subtotal ({selectedItems.length} items)</span>

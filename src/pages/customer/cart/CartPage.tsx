@@ -90,8 +90,10 @@ const handlePurchase = () => {
     try {
       await cartService.deleteItem(id);
       loadCart();
+      alert("Item removed sucessfully.");
     } catch (err) {
       console.error("Remove item failed", err);
+      alert("Cannot remove item from cart. Please login.");
     }
   };
 
@@ -99,6 +101,8 @@ const handlePurchase = () => {
   const subtotal = items
     .filter((i) => i.selected) // ✅ CHỈ TÍNH ITEM ĐƯỢC CHỌN
     .reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+
+  const selectedItems = items.filter((i) => i.selected);
 
   if (loading) return (
     <div className="max-w-[1400px] mx-auto px-6 pt-24 flex justify-center">
@@ -164,7 +168,23 @@ const handlePurchase = () => {
                   >
                     <Minus size={16} />
                   </button>
-                  <span className="w-6 text-center">{item.quantity}</span>
+
+                  <input
+                    type="number"
+                    min={1}
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+
+                      // Chỉ cho phép số >= 1
+                      if (!isNaN(value) && value >= 1) {
+                        updateQuantity(item, value);
+                      }
+                    }}
+                    className="w-10 text-center border rounded outline-none"
+                  />
+
+                  {/* <span className="w-6 text-center">{item.quantity}</span> */}
                   <button
                     onClick={() => updateQuantity(item, item.quantity + 1)}
                   >
@@ -191,6 +211,39 @@ const handlePurchase = () => {
 
           {/* ================= RIGHT ================= */}
           <div className="bg-white rounded-xl p-6">
+
+            {/* 🧾 SELECTED PRODUCTS */}
+            <div className="mb-4">
+              <h3 className="font-semibold mb-3">Order Summary</h3>
+
+              {selectedItems.length === 0 ? (
+                <p className="text-sm text-gray-500">Please select at least one product.</p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {selectedItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-start text-sm"
+                    >
+                      <div className="pr-2 min-w-0">
+                        <p className="truncate font-medium">
+                          {item.productName}
+                        </p>
+                        <p className="text-gray-500">
+                          {item.quantity} × {item.unitPrice.toLocaleString()}đ
+                        </p>
+                      </div>
+
+                      <p className="text-green-600 font-medium whitespace-nowrap">
+                        {(item.unitPrice * item.quantity).toLocaleString()}đ
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 🧮 TOTAL */}
             <p className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>{subtotal.toLocaleString()}đ</span>
@@ -204,15 +257,15 @@ const handlePurchase = () => {
             </p>
 
             <button
-            disabled={subtotal === 0}
-            onClick={handlePurchase}
-            className={`mt-6 w-full py-3 rounded-xl text-white ${
-              subtotal === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-800"
-            }`}
-          >
-            Purchase
+              disabled={subtotal === 0}
+              onClick={handlePurchase}
+              className={`mt-6 w-full py-3 rounded-xl text-white ${
+                  subtotal === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-700 hover:bg-green-800"
+                }`}
+              >
+              Checkout
             </button>
           </div>
         </div>

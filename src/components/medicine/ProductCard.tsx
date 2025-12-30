@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
       alert("Added to cart!");
     } catch (err) {
       console.error("Add to cart failed", err);
-      alert("Cannot add product to cart");
+      alert("Cannot add product to cart. Please login.");
     }
   };
 
