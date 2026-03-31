@@ -13,7 +13,7 @@ const MedicineCard: React.FC<MedicineCardProps> = ({ med, onEdit, onToggleActive
 
   const imageSrc =
     med.imageUrl && med.imageUrl.trim() !== ""
-      ? med.imageUrl
+      ? (med.imageUrl.startsWith('http') ? med.imageUrl : `http://localhost:8080${med.imageUrl}`)
       : "https://dienmay.hoaphat.com.vn/assets/img/no-image.png";
 
   return (

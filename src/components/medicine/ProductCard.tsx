@@ -29,16 +29,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
       });
 
       alert("Added to cart!");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Add to cart failed", err);
-      alert("Cannot add product to cart. Please login.");
+      const message = err.response?.data?.message || "Cannot add product to cart.";
+      alert(message);
     }
   };
 
   return (
     <div className="bg-white rounded-xl p-4 flex flex-col items-center text-center shadow-sm hover:shadow-md transition">
       <img
-        src={product.imageUrl}
+        src={product.imageUrl ? (product.imageUrl.startsWith('http') ? product.imageUrl : `http://localhost:8080${product.imageUrl}`) : "/assets/no-image.png"}
         alt={product.name}
         className="w-32 h-32 object-contain mb-4"
       />

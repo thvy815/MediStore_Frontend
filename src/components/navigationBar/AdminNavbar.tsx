@@ -5,6 +5,8 @@ const menu = [
   { label: "Medicine", path: "admin/medicines" },
   { label: "Voucher", path: "admin/voucher" },
   { label: "Storage", path: "admin/storage" },
+  { label: "Delivery Methods", path: "admin/delivery-methods" },
+  { label: "Payment Methods", path: "admin/payment-methods" },
   { label: "Report", path: "admin/report" },
   { label: "Access", path: "admin/access" },
   { label: "Customer", path: "admin/customer" },

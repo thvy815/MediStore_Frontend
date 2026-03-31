@@ -15,8 +15,17 @@ export type ShippingInfo = {
 };
 
 export type DeliveryInfo = {
-  id: "standard" | "express";
+  id: string;
   fee: number;
+  name: string;
+  description: string;
+  estimatedDays: number;
+};
+
+export type PaymentInfo = {
+  id: string;
+  code: string;
+  name: string;
 };
 
 type CheckoutState = {
@@ -28,6 +37,9 @@ type CheckoutState = {
 
   delivery: DeliveryInfo;
   setDelivery: (d: DeliveryInfo) => void;
+
+  payment?: PaymentInfo;
+  setPayment: (p: PaymentInfo) => void;
 };
 
 const CheckoutContext = createContext<CheckoutState | null>(null);
@@ -36,9 +48,13 @@ export const CheckoutProvider = ({ children }: { children: React.ReactNode }) =>
   const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo | undefined>();
   const [delivery, setDelivery] = useState<DeliveryInfo>({
-    id: "standard",
-    fee: 30000,
+    id: "",
+    fee: 0,
+    name: "",
+    description: "",
+    estimatedDays: 0,
   });
+  const [payment, setPayment] = useState<PaymentInfo | undefined>();
 
   return (
     <CheckoutContext.Provider
@@ -49,12 +65,14 @@ export const CheckoutProvider = ({ children }: { children: React.ReactNode }) =>
         setShippingInfo,
         delivery,
         setDelivery,
+        payment,
+        setPayment,
       }}
     >
       {children}
     </CheckoutContext.Provider>
   );
-};
+};;
 
 export const useCheckout = () => {
   const ctx = useContext(CheckoutContext);

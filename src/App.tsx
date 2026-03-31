@@ -6,6 +6,8 @@ import CustomerLayout from "@/components/layout/CustomerLayout";
 import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 import StoragePage from "@/pages/admin/storage/StoragePage";
 import InventoryPage from "@/pages/admin/storage/TrackInventoryPage";
+import DeliveryMethodsPage from "@/pages/admin/delivery/DeliveryMethodsPage";
+import PaymentMethodsPage from "@/pages/admin/payment/PaymentMethodsPage";
 import CustomerHome from "@/pages/customer/HomePage";
 import CartPage from "@/pages/customer/cart/CartPage";
 import SearchPage from "./pages/customer/SearchPage";
@@ -57,6 +59,8 @@ const App = () => {
         <Route path="/admin/medicines" element={<MedicinesPage />} />
         <Route path="/admin/storage" element={<StoragePage />} />
         <Route path="/admin/inventory" element={<InventoryPage />} />
+        <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
+        <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
       </Route>
     </Routes>
   );

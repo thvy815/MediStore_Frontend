@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function ReviewStep() {
   const navigate = useNavigate();
-  const { selectedItems, shippingInfo, delivery } = useCheckout();
+  const { selectedItems, shippingInfo, delivery, payment } = useCheckout();
   const [loading, setLoading] = useState(false);
 
   const subtotal = selectedItems.reduce(
@@ -21,42 +21,42 @@ export default function ReviewStep() {
       return;
     }
 
+    if (!shippingInfo || !delivery.id || !payment) {
+      alert("Please complete all steps");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await orderService.createOrder(
-        selectedItems.map((i) => ({
+      const orderData = {
+        items: selectedItems.map((i) => ({
           productId: i.productId,
           productUnitId: i.productUnitId,
           quantity: i.quantity,
-        }))
-      );
+        })),
+        shippingName: shippingInfo.fullName,
+        shippingPhone: shippingInfo.phone,
+        shippingAddress: shippingInfo.address,
+        deliveryMethodId: delivery.id,
+        paymentMethodId: payment.id,
+      };
 
-      alert("Order placed successfully");
+      const res = await orderService.createOrder(orderData);
+
+      alert(`Order placed successfully! Order ID: ${res.data.orderId}`);
       navigate("/customer/home");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Create order failed");
+      alert(err.response?.data?.message || "Create order failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen px-8 py-6">
-      {/* BACK */}
-      <button
-        onClick={() => navigate("/checkout/payment")}
-        className="flex items-center gap-2 text-green-600 hover:text-green-700 mb-4"
-      >
-        <ArrowLeft size={18} />
-        <span>Back to Payment</span>
-      </button>
-
-        <div className="col-span-2 bg-white rounded-xl p-6 space-y-6">
-          <h3 className="font-semibold text-lg">
-            Review Order Information
-          </h3>
+    <div>
+      <h3 className="font-semibold mb-4">📋 Review Order</h3>
 
           {/* SHIPPING INFO */}
           {shippingInfo && (
@@ -81,7 +81,7 @@ export default function ReviewStep() {
                 >
                   <div className="flex items-center gap-3">
                     <img
-                      src={item.imageUrl}
+                      src={item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:8080${item.imageUrl}`) : "/assets/no-image.png"}
                       className="w-12 h-12 object-cover rounded"
                     />
                     <div>
@@ -106,13 +106,22 @@ export default function ReviewStep() {
 
             <div className="flex justify-between">
               <span>
-                {delivery.id === "standard"
-                  ? "Standard Delivery (3–5 days)"
-                  : "Express Delivery (1–2 days)"}
+                {delivery.name} ({delivery.description})
               </span>
 
               <span className="font-medium">
                 {delivery.fee.toLocaleString()}đ
+              </span>
+            </div>
+          </section>
+
+          {/* PAYMENT */}
+          <section className="bg-gray-50 rounded-lg p-4 text-sm">
+            <h4 className="font-medium mb-2">Payment Method</h4>
+
+            <div className="flex justify-between">
+              <span>
+                {payment?.name || "Not selected"}
               </span>
             </div>
           </section>
@@ -138,9 +147,16 @@ export default function ReviewStep() {
           </section>
 
           <button
+            onClick={() => navigate("/checkout/payment")}
+            className="mt-4 w-full bg-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-300"
+          >
+            Back to Payment
+          </button>
+
+          <button
             onClick={handleConfirmOrder}
             disabled={subtotal === 0 || loading}
-            className={`mt-6 w-full py-3 rounded-xl text-white transition
+            className={`mt-4 w-full py-3 rounded-xl text-white transition
             ${
               loading || subtotal === 0
                 ? "bg-gray-400 cursor-not-allowed"
@@ -149,7 +165,6 @@ export default function ReviewStep() {
           >
             {loading ? "Placing order..." : "Confirm Order"}
           </button>
-        </div>
-      </div>
+    </div>
   );
 }

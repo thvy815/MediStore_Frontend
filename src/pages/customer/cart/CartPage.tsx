@@ -149,7 +149,7 @@ const handlePurchase = () => {
                   />
 
                   <img
-                    src={item.imageUrl || "/assets/no-image.png"}
+                    src={item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:8080${item.imageUrl}`) : "/assets/no-image.png"}
                     className="w-16 h-16 object-cover rounded flex-shrink-0"
                   />
 

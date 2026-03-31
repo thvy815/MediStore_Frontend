@@ -16,6 +16,7 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,10 +29,14 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
       return;
     }
 
+    setError("");
     try {
       setLoading(true);
       await authService.register(form);
-      onOpenLogin();
+      setSuccess("Registration successful!");
+      setTimeout(() => {
+        onOpenLogin();
+      }, 1000);
     } catch (err: any) {
       setError(err.response?.data?.message || "Register failed");
     } finally {
@@ -100,6 +105,7 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
+        {success && <p className="text-green-500 text-sm">{success}</p>}
 
         <button
           onClick={handleRegister}

@@ -15,15 +15,29 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [tab, setTab] = useState<"email" | "phone">("email");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    const loggedUser = await login({ email, password });
-    onClose();
-
-    if (loggedUser.roleName === "Admin") {
-      navigate("/admin/medicines", { replace: true });
-    } else {
-      navigate("/customer/home", { replace: true });
+    setError("");
+    setSuccess("");
+    try {
+      setLoading(true);
+      const loggedUser = await login({ email, password });
+      setSuccess("Login successful!");
+      setTimeout(() => {
+        onClose();
+        if (loggedUser.roleName === "Admin") {
+          navigate("/admin/medicines", { replace: true });
+        } else {
+          navigate("/customer/home", { replace: true });
+        }
+      }, 1000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,11 +111,16 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
         </span>
       </div>
 
+      {/* Error/Success Messages */}
+      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+      {success && <p className="text-green-500 text-sm mb-2">{success}</p>}
+
       <button
         onClick={handleLogin}
-        className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-full font-medium"
+        disabled={loading}
+        className="w-full bg-green-700 hover:bg-green-800 text-white py-2 rounded-full font-medium disabled:opacity-50"
       >
-        Login
+        {loading ? "Logging in..." : "Login"}
       </button>
 
       <p className="text-sm text-center mt-4">
