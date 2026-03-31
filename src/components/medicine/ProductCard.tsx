@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import type { ProductView } from "../../types/product";
 import { cartService } from "../../services/cartService";
 
@@ -8,6 +9,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
+  const navigate = useNavigate();
   const handleBuyNow = async () => {
     // 1) nếu parent muốn tự xử lý
     if (onBuy) {
@@ -37,7 +39,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 flex flex-col items-center text-center shadow-sm hover:shadow-md transition">
+    <div
+      className="bg-white rounded-xl p-4 flex flex-col items-center text-center shadow-sm hover:shadow-md transition cursor-pointer"
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
       <img
         src={product.imageUrl ? (product.imageUrl.startsWith('http') ? product.imageUrl : `http://localhost:8080${product.imageUrl}`) : "/assets/no-image.png"}
         alt={product.name}
@@ -53,10 +58,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onBuy }) => {
       </p>
 
       <button
-        className="bg-green-600 text-white text-sm px-4 py-2 rounded-full hover:bg-green-700"
-        onClick={handleBuyNow}
+        className={`text-sm px-4 py-2 rounded-full ${
+          product.availableQuantity <= 0
+            ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+            : "bg-green-600 text-white hover:bg-green-700"
+        }`}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (product.availableQuantity <= 0) return;
+          handleBuyNow();
+        }}
+        disabled={product.availableQuantity <= 0}
       >
-        Purchase
+        {product.availableQuantity <= 0 ? "Out of Stock" : "Purchase"}
       </button>
     </div>
   );

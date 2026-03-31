@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { deliveryService } from "@/services/deliveryService";

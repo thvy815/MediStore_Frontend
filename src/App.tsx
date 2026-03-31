@@ -11,11 +11,14 @@ import PaymentMethodsPage from "@/pages/admin/payment/PaymentMethodsPage";
 import CustomerHome from "@/pages/customer/HomePage";
 import CartPage from "@/pages/customer/cart/CartPage";
 import SearchPage from "./pages/customer/SearchPage";
+import ProductDetailPage from "@/pages/customer/product/ProductDetailPage";
 import CheckoutPage from "@/pages/customer/checkout/CheckoutPage";
 import ShippingStep from "@/pages/customer/checkout/ShippingStep";
 import DeliveryStep from "@/pages/customer/checkout/DeliveryStep";
 import ReviewStep from "./pages/customer/checkout/ReviewStep";
 import PaymentStep from "./pages/customer/checkout/PaymentStep";
+import ProfilePage from "@/pages/customer/profile/ProfilePage";
+import OrdersPage from "@/pages/customer/orders/OrdersPage";
 
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import RequireAdmin from "./components/auth/RequireAdmin";
@@ -36,7 +39,10 @@ const App = () => {
       >
         <Route path="/search" element={<SearchPage />} />
         <Route path="/customer/home" element={<CustomerHome />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/orders" element={<OrdersPage />} />
 
         {/* Checkout pages */}
         <Route path="/checkout" element={<CheckoutPage />}>

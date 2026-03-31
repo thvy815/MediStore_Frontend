@@ -12,7 +12,6 @@ import { brandService } from "@/services/brandService";
 import { categoryService } from "@/services/categoryService";
 
 import type { ProductView } from "@/types/product";
-import type { ProductUnitView } from "@/types/product";
 import type { CategoryView } from "@/types/category";
 import type { BrandView } from "@/types/brand";
 
@@ -32,31 +31,36 @@ export default function CustomerHome() {
         const productList = productRes.data;
 
         // 2️⃣ Với mỗi product → lấy unit active đầu tiên
-        const productsWithPrice: ProductView[] = await Promise.all(
-          productList.map(async (p: any) => {
-            let unit: ProductUnitView | null = null;
+        const productsWithPrice: ProductView[] = productList.map((p: any) => {
+        const activeUnits = p.units?.filter((u: any) => u.isActive) || [];
 
-            try {
-              const unitRes = await productService.getActiveUnitsByProduct(p.id);
-              unit = unitRes.data?.[0] ?? null;
-            } catch {
-              unit = null;
-            }
+        const unit =
+          activeUnits.find((u: any) => u.availableQuantity > 0) ||
+          activeUnits.find((u: any) => u.isDefault) ||
+          activeUnits[0] ||
+          null;
 
-            return {
-              id: p.id,
-              name: p.name,
-              imageUrl: p.imageUrl,
+        return {
+          id: p.id,
+          name: p.name,
+          imageUrl: p.imageUrl,
 
-              // price + unit để hiển thị
-              unit: unit?.unit ?? "",
-              price: unit?.price ?? 0,
+          unit: unit?.unitName ?? "",
+          price: unit?.price ?? 0,
+          productUnitId: unit?.id ?? "",
 
-              // productUnitId để add to cart
-              productUnitId: unit?.id ?? "",
-            };
-          })
-        );
+          availableQuantity: unit?.availableQuantity ?? 0,
+        };
+      });
+
+        // Sort: available first, out of stock last
+        productsWithPrice.sort((a, b) => {
+          const aOut = a.availableQuantity <= 0;
+          const bOut = b.availableQuantity <= 0;
+          if (aOut && !bOut) return 1;
+          if (!aOut && bOut) return -1;
+          return 0;
+        });
 
         setProducts(productsWithPrice);
       } catch (err) {

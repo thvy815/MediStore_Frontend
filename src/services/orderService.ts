@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { getUserId } from "@/utils/auth";
+import type { Order } from "@/types/order";
 
 export const orderService = {
   /**
@@ -26,4 +27,10 @@ export const orderService = {
       ...data,
     });
   },
+
+  /**
+   * GET USER ORDERS
+   * GET /api/orders/user/{userId}
+   */
+  getUserOrders: (userId: string) => api.get<Order[]>(`/orders/user/${userId}`),
 };

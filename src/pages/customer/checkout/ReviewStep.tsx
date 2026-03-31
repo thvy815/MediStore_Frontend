@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { orderService } from "@/services/orderService";

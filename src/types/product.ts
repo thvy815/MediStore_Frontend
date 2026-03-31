@@ -47,6 +47,7 @@ export interface ProductView {
   unit: string;
   price: number;
   productUnitId: string;
+  availableQuantity: number;
 }
 
 export interface ProductUnitView {
@@ -55,4 +56,5 @@ export interface ProductUnitView {
   unit: string;
   price: number;
   isActive: boolean;
+  availableQuantity: number;
 }
