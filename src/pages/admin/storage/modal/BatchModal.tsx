@@ -132,7 +132,7 @@ const BatchModal: React.FC<Props> = ({ batch, onClose, onSuccess, mode = "view" 
             type="number"
             placeholder="Quantity"
             className="border rounded-lg p-2"
-            value={form.quantity}
+            value={form.quantityRemaining}
             disabled={!editMode}
             onChange={e => setForm(f => ({ ...f, quantity: Number(e.target.value) }))}
           />

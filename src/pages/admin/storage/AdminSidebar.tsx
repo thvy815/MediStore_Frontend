@@ -1,8 +1,7 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <aside className="w-64 bg-white border-r min-h-screen px-4 py-6">
