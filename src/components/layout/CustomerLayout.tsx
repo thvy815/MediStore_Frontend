@@ -9,8 +9,7 @@ const CustomerLayout = () => {
       {/* Header */}
       <CustomerHeader />
 
-      {/* Navbar */}
-      <CustomerNavbar />
+      
 
       {/* Main content */}
       <main className="flex-1">

@@ -9,8 +9,9 @@ export default function CheckoutLayout() {
   const stepMap: Record<string, number> = {
     shipping: 1,
     delivery: 2,
-    review: 4,
     payment: 3,
+    voucher: 4,
+    review: 5,
   };
 
   const currentStep =
@@ -19,7 +20,6 @@ export default function CheckoutLayout() {
   return (
     <div className="bg-[#f6faf7] min-h-screen">
       <div className="max-w-[1400px] mx-auto px-6 py-6">
-        {/* BACK */}
         <button
           onClick={() => navigate("/cart")}
           className="flex items-center gap-2 text-green-600 mb-4"
@@ -28,7 +28,6 @@ export default function CheckoutLayout() {
           Back to cart
         </button>
 
-        {/* STEPS */}
         <div className="bg-white rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between">
             <Step index={1} label="Shipping" active={currentStep >= 1} />
@@ -37,18 +36,17 @@ export default function CheckoutLayout() {
             <Line />
             <Step index={3} label="Payment" active={currentStep >= 3} />
             <Line />
-            <Step index={4} label="Review" active={currentStep >= 4} />
+            <Step index={4} label="Voucher" active={currentStep >= 4} />
+            <Line />
+            <Step index={5} label="Review" active={currentStep >= 5} />
           </div>
         </div>
 
-        {/* MAIN GRID */}
         <div className="grid grid-cols-3 gap-6">
-          {/* LEFT */}
           <div className="col-span-2 bg-white rounded-xl p-6">
             <Outlet />
           </div>
 
-          {/* RIGHT */}
           <OrderSummary />
         </div>
       </div>
@@ -75,26 +73,49 @@ function Line() {
   return <div className="flex-1 h-[2px] bg-gray-200 mx-2" />;
 }
 
-/* ===== ORDER SUMMARY (CHUNG) ===== */
 function OrderSummary() {
-  const { selectedItems, delivery } = useCheckout();
+  const { selectedItems, delivery, voucher } = useCheckout();
 
   const subtotal = selectedItems.reduce(
     (s, i) => s + i.unitPrice * i.quantity,
     0
   );
 
-  const total = subtotal + delivery.fee;
+  const deliveryFee = delivery?.fee || 0;
+  const beforeDiscount = subtotal + deliveryFee;
+
+  let discountAmount = 0;
+
+  if (voucher) {
+    if (voucher.discountType === "percent") {
+      discountAmount = beforeDiscount * (voucher.discountValue / 100);
+
+      if (voucher.maxDiscount && discountAmount > voucher.maxDiscount) {
+        discountAmount = voucher.maxDiscount;
+      }
+    }
+
+    if (voucher.discountType === "fixed") {
+      discountAmount = voucher.discountValue;
+    }
+
+    if (voucher.discountType === "freeship") {
+      discountAmount = deliveryFee;
+    }
+
+    if (discountAmount > beforeDiscount) {
+      discountAmount = beforeDiscount;
+    }
+  }
+
+  const total = beforeDiscount - discountAmount;
 
   return (
     <div className="bg-white rounded-xl p-6 h-fit">
       <h3 className="font-semibold mb-4">Order Summary</h3>
 
-      {/* ===== SELECTED PRODUCTS LIST ===== */}
       {selectedItems.length === 0 ? (
-        <p className="text-sm text-gray-500 mb-4">
-          No products selected
-        </p>
+        <p className="text-sm text-gray-500 mb-4">No products selected</p>
       ) : (
         <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
           {selectedItems.map((item) => (
@@ -103,9 +124,7 @@ function OrderSummary() {
               className="flex justify-between items-start text-sm"
             >
               <div className="min-w-0 pr-2">
-                <p className="font-medium truncate">
-                  {item.productName}
-                </p>
+                <p className="font-medium truncate">{item.productName}</p>
                 <p className="text-gray-500">
                   {item.quantity} × {item.unitPrice.toLocaleString()}đ
                 </p>
@@ -119,7 +138,6 @@ function OrderSummary() {
         </div>
       )}
 
-      {/* ===== PRICE SUMMARY ===== */}
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span>Subtotal ({selectedItems.length} items)</span>
@@ -128,8 +146,15 @@ function OrderSummary() {
 
         <div className="flex justify-between">
           <span>Delivery Fee</span>
-          <span>{delivery.fee.toLocaleString()}đ</span>
+          <span>{deliveryFee.toLocaleString()}đ</span>
         </div>
+
+        {voucher && (
+          <div className="flex justify-between text-green-600">
+            <span>Voucher ({voucher.code})</span>
+            <span>-{discountAmount.toLocaleString()}đ</span>
+          </div>
+        )}
 
         <hr />
 

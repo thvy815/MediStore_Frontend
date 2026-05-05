@@ -5,14 +5,45 @@ import { useState } from "react";
 
 export default function ReviewStep() {
   const navigate = useNavigate();
-  const { selectedItems, shippingInfo, delivery, payment } = useCheckout();
+
+  const { selectedItems, shippingInfo, delivery, payment, voucher } =
+    useCheckout();
+
   const [loading, setLoading] = useState(false);
 
   const subtotal = selectedItems.reduce(
     (sum, i) => sum + i.unitPrice * i.quantity,
     0
   );
-  const total = subtotal + delivery.fee;
+
+  const deliveryFee = delivery?.fee || 0;
+  const beforeDiscount = subtotal + deliveryFee;
+
+  let discountAmount = 0;
+
+  if (voucher) {
+    if (voucher.discountType === "percent") {
+      discountAmount = beforeDiscount * (voucher.discountValue / 100);
+
+      if (voucher.maxDiscount && discountAmount > voucher.maxDiscount) {
+        discountAmount = voucher.maxDiscount;
+      }
+    }
+
+    if (voucher.discountType === "fixed") {
+      discountAmount = voucher.discountValue;
+    }
+
+    if (voucher.discountType === "freeship") {
+      discountAmount = deliveryFee;
+    }
+
+    if (discountAmount > beforeDiscount) {
+      discountAmount = beforeDiscount;
+    }
+  }
+
+  const total = beforeDiscount - discountAmount;
 
   const handleConfirmOrder = async () => {
     if (selectedItems.length === 0) {
@@ -39,6 +70,7 @@ export default function ReviewStep() {
         shippingAddress: shippingInfo.address,
         deliveryMethodId: delivery.id,
         paymentMethodId: payment.id,
+        voucherCode: voucher ? voucher.code : null,
       };
 
       const res = await orderService.createOrder(orderData);
@@ -57,113 +89,147 @@ export default function ReviewStep() {
     <div>
       <h3 className="font-semibold mb-4">📋 Review Order</h3>
 
-          {/* SHIPPING INFO */}
-          {shippingInfo && (
-            <section className="bg-gray-50 rounded-lg p-4 text-sm">
-                <h4 className="font-medium mb-2">Shipping Address</h4>
-                <p><b>Name:</b> {shippingInfo.fullName}</p>
-                <p><b>Phone:</b> {shippingInfo.phone}</p>
-                <p><b>Address:</b> {shippingInfo.address}</p>
-            </section>
-            )}
+      {/* SHIPPING INFO */}
+      {shippingInfo && (
+        <section className="bg-gray-50 rounded-lg p-4 text-sm">
+          <h4 className="font-medium mb-2">Shipping Address</h4>
+          <p>
+            <b>Name:</b> {shippingInfo.fullName}
+          </p>
+          <p>
+            <b>Phone:</b> {shippingInfo.phone}
+          </p>
+          <p>
+            <b>Address:</b> {shippingInfo.address}
+          </p>
+        </section>
+      )}
 
+      {/* ORDER ITEMS */}
+      <section className="mt-4">
+        <h4 className="font-medium mb-2">Order Items</h4>
 
-          {/* ORDER ITEMS */}
-          <section>
-            <h4 className="font-medium mb-2">Order Items</h4>
+        <div className="space-y-3">
+          {selectedItems.map((item) => (
+            <div
+              key={item.id}
+              className="flex justify-between items-center border rounded-lg p-3"
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={
+                    item.imageUrl
+                      ? item.imageUrl.startsWith("http")
+                        ? item.imageUrl
+                        : `http://localhost:8080${item.imageUrl}`
+                      : "/assets/no-image.png"
+                  }
+                  className="w-12 h-12 object-cover rounded"
+                />
 
-            <div className="space-y-3">
-              {selectedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between items-center border rounded-lg p-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:8080${item.imageUrl}`) : "/assets/no-image.png"}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                    <div>
-                      <p className="font-medium">{item.productName}</p>
-                      <p className="text-sm text-gray-500">
-                        Quantity: {item.quantity}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="font-semibold text-green-700">
-                    {(item.unitPrice * item.quantity).toLocaleString()}đ
+                <div>
+                  <p className="font-medium">{item.productName}</p>
+                  <p className="text-sm text-gray-500">
+                    Quantity: {item.quantity}
                   </p>
                 </div>
-              ))}
+              </div>
+
+              <p className="font-semibold text-green-700">
+                {(item.unitPrice * item.quantity).toLocaleString()}đ
+              </p>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          {/* DELIVERY */}
-          <section className="bg-gray-50 rounded-lg p-4 text-sm">
-            <h4 className="font-medium mb-2">Delivery Method</h4>
+      {/* DELIVERY */}
+      <section className="bg-gray-50 rounded-lg p-4 text-sm mt-4">
+        <h4 className="font-medium mb-2">Delivery Method</h4>
 
-            <div className="flex justify-between">
-              <span>
-                {delivery.name} ({delivery.description})
-              </span>
+        <div className="flex justify-between">
+          <span>
+            {delivery.name} ({delivery.description})
+          </span>
 
-              <span className="font-medium">
-                {delivery.fee.toLocaleString()}đ
-              </span>
-            </div>
-          </section>
+          <span className="font-medium">
+            {deliveryFee.toLocaleString()}đ
+          </span>
+        </div>
+      </section>
 
-          {/* PAYMENT */}
-          <section className="bg-gray-50 rounded-lg p-4 text-sm">
-            <h4 className="font-medium mb-2">Payment Method</h4>
+      {/* PAYMENT */}
+      <section className="bg-gray-50 rounded-lg p-4 text-sm mt-4">
+        <h4 className="font-medium mb-2">Payment Method</h4>
 
-            <div className="flex justify-between">
-              <span>
-                {payment?.name || "Not selected"}
-              </span>
-            </div>
-          </section>
+        <div className="flex justify-between">
+          <span>{payment?.name || "Not selected"}</span>
+        </div>
+      </section>
 
-          {/* ORDER SUMMARY */}
-          <section className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>{subtotal.toLocaleString()}đ</span>
-            </div>
+      {/* VOUCHER */}
+      <section className="bg-gray-50 rounded-lg p-4 text-sm mt-4">
+        <h4 className="font-medium mb-2">Voucher</h4>
 
-            <div className="flex justify-between">
-              <span>Delivery Fee</span>
-              <span>{delivery.fee.toLocaleString()}đ</span>
-            </div>
+        {voucher ? (
+          <div className="flex justify-between">
+            <span>
+              {voucher.code} - {voucher.description}
+            </span>
+            <span className="font-medium text-green-700">
+              -{discountAmount.toLocaleString()}đ
+            </span>
+          </div>
+        ) : (
+          <span className="text-gray-500">No voucher selected</span>
+        )}
+      </section>
 
-            <hr />
+      {/* ORDER SUMMARY */}
+      <section className="bg-gray-50 rounded-lg p-4 text-sm space-y-2 mt-4">
+        <div className="flex justify-between">
+          <span>Subtotal</span>
+          <span>{subtotal.toLocaleString()}đ</span>
+        </div>
 
-            <div className="flex justify-between font-semibold text-green-700 text-base">
-              <span>Total</span>
-              <span>{total.toLocaleString()}đ</span>
-            </div>
-          </section>
+        <div className="flex justify-between">
+          <span>Delivery Fee</span>
+          <span>{deliveryFee.toLocaleString()}đ</span>
+        </div>
 
-          <button
-            onClick={() => navigate("/checkout/payment")}
-            className="mt-4 w-full bg-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-300"
-          >
-            Back to Payment
-          </button>
+        {voucher && (
+          <div className="flex justify-between text-green-700">
+            <span>Voucher Discount</span>
+            <span>-{discountAmount.toLocaleString()}đ</span>
+          </div>
+        )}
 
-          <button
-            onClick={handleConfirmOrder}
-            disabled={subtotal === 0 || loading}
-            className={`mt-4 w-full py-3 rounded-xl text-white transition
-            ${
-              loading || subtotal === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-800"
-            }`}
-          >
-            {loading ? "Placing order..." : "Confirm Order"}
-          </button>
+        <hr />
+
+        <div className="flex justify-between font-semibold text-green-700 text-base">
+          <span>Total</span>
+          <span>{total.toLocaleString()}đ</span>
+        </div>
+      </section>
+
+      <button
+        onClick={() => navigate("/checkout/voucher")}
+        className="mt-4 w-full bg-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-300"
+      >
+        Back to Voucher
+      </button>
+
+      <button
+        onClick={handleConfirmOrder}
+        disabled={subtotal === 0 || loading}
+        className={`mt-4 w-full py-3 rounded-xl text-white transition ${
+          loading || subtotal === 0
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-green-700 hover:bg-green-800"
+        }`}
+      >
+        {loading ? "Placing order..." : "Confirm Order"}
+      </button>
     </div>
   );
 }

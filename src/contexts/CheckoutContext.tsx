@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import type { CartItem } from "@/types/cart";
+import type { Voucher } from "@/types/voucher";
 
 export type CheckoutItem = {
   productId: string;
@@ -40,6 +41,9 @@ type CheckoutState = {
 
   payment?: PaymentInfo;
   setPayment: (p: PaymentInfo) => void;
+
+  voucher: Voucher | null;
+  setVoucher: (v: Voucher | null) => void;
 };
 
 const CheckoutContext = createContext<CheckoutState | null>(null);
@@ -47,6 +51,7 @@ const CheckoutContext = createContext<CheckoutState | null>(null);
 export const CheckoutProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo | undefined>();
+
   const [delivery, setDelivery] = useState<DeliveryInfo>({
     id: "",
     fee: 0,
@@ -54,7 +59,10 @@ export const CheckoutProvider = ({ children }: { children: React.ReactNode }) =>
     description: "",
     estimatedDays: 0,
   });
+
   const [payment, setPayment] = useState<PaymentInfo | undefined>();
+
+  const [voucher, setVoucher] = useState<Voucher | null>(null);
 
   return (
     <CheckoutContext.Provider
@@ -67,17 +75,21 @@ export const CheckoutProvider = ({ children }: { children: React.ReactNode }) =>
         setDelivery,
         payment,
         setPayment,
+        voucher,
+        setVoucher,
       }}
     >
       {children}
     </CheckoutContext.Provider>
   );
-};;
+};
 
 export const useCheckout = () => {
   const ctx = useContext(CheckoutContext);
+
   if (!ctx) {
     throw new Error("useCheckout must be used inside CheckoutProvider");
   }
+
   return ctx;
 };

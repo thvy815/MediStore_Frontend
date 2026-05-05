@@ -64,7 +64,7 @@ export default function PaymentStep() {
       </button>
 
       <button
-        onClick={() => navigate("/checkout/review")}
+        onClick={() => navigate("/checkout/voucher")}
         className="mt-4 w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800"
         disabled={!payment}
       >
