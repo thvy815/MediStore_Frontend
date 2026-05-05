@@ -32,6 +32,7 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
     manufactureDate: "",
     expiryDate: "",
     lawCode: "", // ✅ LAW
+    isActive: true,
   });
 
   const [selectedUnitId, setSelectedUnitId] = useState("");
@@ -94,14 +95,14 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
 
   const handleSubmit = async () => {
     if (
-      !form.productId ||
-      !form.productUnitId ||
-      !form.supplierId ||
+      !form.productId.trim() ||
+      !form.productUnitId.trim() ||
+      !form.supplierId.trim() ||
       !form.expiryDate
     ) {
       alert("Please fill required fields");
       return;
-    }
+    } 
 
     if (form.importPrice <= 0) {
       alert("Import price must be greater than 0");
@@ -110,17 +111,17 @@ const CreateStorageModal: React.FC<Props> = ({ onClose, onSuccess }) => {
 
     try {
       await batchService.create({
-        productId: form.productId,
-        supplierId: form.supplierId,
-        productUnitId: form.productUnitId,
+        productId: form.productId || "",
+        supplierId: form.supplierId || "",
+        productUnitId: form.productUnitId || "",
         quantity: Number(form.quantity),
         importPrice: Number(form.importPrice),
         manufactureDate: form.manufactureDate || undefined,
-        expiryDate: form.expiryDate,
+        expiryDate: form.expiryDate || "",
         batchNumber: `BATCH-${Date.now()}`,
-        lawCode: form.lawCode || undefined, // ✅ LAW
+        lawCode: form.lawCode || undefined,
       });
-
+      
       alert("Import batch success");
       await onSuccess?.();
       onClose();
