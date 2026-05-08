@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import CustomerHeader from "@/components/layout/CustomerHeader";
-import CustomerNavbar from "@/components/navigationBar/CustomerNavbar";
 import Footer from "./Footer";
 
 const CustomerLayout = () => {
