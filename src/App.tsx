@@ -23,6 +23,7 @@ import OrdersPage from "@/pages/customer/orders/OrdersPage";
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import RequireAdmin from "./components/auth/RequireAdmin";
 import VoucherStep from "./pages/customer/checkout/VoucherStep";
+import PaymentResult from "./pages/customer/PaymentResultPage";
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="/admin/inventory" element={<InventoryPage />} />
         <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
+        <Route path="/payment-result" element={<PaymentResult />} />
       </Route>
     </Routes>
   );
