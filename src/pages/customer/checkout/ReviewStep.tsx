@@ -73,13 +73,59 @@ export default function ReviewStep() {
         voucherCode: voucher ? voucher.code : null,
       };
 
+      // 1. Tạo order trước
       const res = await orderService.createOrder(orderData);
+      const orderId = res.data.orderId;
 
-      alert(`Order placed successfully! Order ID: ${res.data.orderId}`);
-      navigate("/customer/home");
-    } catch (err: any) {
+      // 2. Nếu không phải VNPay → done luôn
+      if (payment.code !== "vnpay") {
+        alert("Order placed successfully!");
+        navigate("/customer/home");
+        return;
+      }
+
+      // 3. VNPay flow
+      const r = await fetch("http://localhost:8080/api/payments/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          paymentMethodId: payment.id,
+          amount: total,
+        }),
+      });
+
+      if (!r.ok) {
+        const err = await r.text();
+        throw new Error(err);
+      }
+
+      const paymentRes = await r.json();
+
+      console.log("VNPay response:", paymentRes);
+
+      const paymentUrl =
+        paymentRes?.paymentUrl || paymentRes?.data?.paymentUrl;
+
+      if (!paymentUrl) {
+        console.error("Invalid VNPay response:", paymentRes);
+        alert("Không tạo được VNPay URL");
+        return;
+      }
+
+      window.location.href = paymentUrl;
+
+      // backend trả về URL VNPay
+      window.location.href = paymentRes.paymentUrl;
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.response?.data?.message || "Create order failed");
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" && err !== null && "response" in err
+          ? (err as any).response?.data?.message
+          : undefined;
+      alert(message || "Create order failed");
     } finally {
       setLoading(false);
     }
