@@ -54,6 +54,7 @@ const App = () => {
           <Route path="review" element={<ReviewStep />} />
           <Route path="payment" element={<PaymentStep />} />
           <Route path="voucher" element={<VoucherStep />} />
+          <Route path="payment-result" element={<PaymentResult />} />
         </Route>
       </Route>
 
@@ -70,7 +71,6 @@ const App = () => {
         <Route path="/admin/inventory" element={<InventoryPage />} />
         <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
-        <Route path="/payment-result" element={<PaymentResult />} />
       </Route>
     </Routes>
   );
