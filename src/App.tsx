@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import AdminLayout from "@/components/layout/AdminLayout";
 import CustomerLayout from "@/components/layout/CustomerLayout";
-
+import ChatBubble from "./components/chat/ChatBubble";
 import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 import StoragePage from "@/pages/admin/storage/StoragePage";
 import InventoryPage from "@/pages/admin/storage/TrackInventoryPage";
@@ -26,6 +26,7 @@ import VoucherStep from "./pages/customer/checkout/VoucherStep";
 
 const App = () => {
   return (
+    <>
     <Routes>
       {/* Redirect mặc định */}
       <Route path="/" element={<Navigate to="/customer/home" replace />} />
@@ -71,6 +72,8 @@ const App = () => {
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
       </Route>
     </Routes>
+    <ChatBubble />
+    </>
   );
 };
 
