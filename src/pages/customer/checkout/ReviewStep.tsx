@@ -44,6 +44,7 @@ export default function ReviewStep() {
   }
 
   const total = beforeDiscount - discountAmount;
+  
 
   const handleConfirmOrder = async () => {
     if (selectedItems.length === 0) {
@@ -61,6 +62,7 @@ export default function ReviewStep() {
 
       const orderData = {
         items: selectedItems.map((i) => ({
+          cartItemId: i.id,
           productId: i.productId,
           productUnitId: i.productUnitId,
           quantity: i.quantity,
@@ -76,11 +78,12 @@ export default function ReviewStep() {
       // 1. Tạo order trước
       const res = await orderService.createOrder(orderData);
       const orderId = res.data.orderId;
+      console.log("ORDER DATA:", orderData);
 
       // 2. Nếu không phải VNPay → done luôn
       if (payment.code !== "vnpay") {
         alert("Order placed successfully!");
-        navigate("/customer/home");
+        navigate("/orders");
         return;
       }
 

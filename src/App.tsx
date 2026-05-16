@@ -31,7 +31,7 @@ const App = () => {
     <>
     <Routes>
       {/* Redirect mặc định */}
-      <Route path="/" element={<Navigate to="/customer/home" replace />} />
+      <Route path="/" element={<Navigate to="/admin/medicines" replace />} />
 
       {/* ================= CUSTOMER ================= */}
       <Route
@@ -57,6 +57,8 @@ const App = () => {
           <Route path="payment" element={<PaymentStep />} />
           <Route path="voucher" element={<VoucherStep />} />
           <Route path="payment-result" element={<PaymentResult />} />
+
+        
         </Route>
       </Route>
 

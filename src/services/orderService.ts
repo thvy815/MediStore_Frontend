@@ -9,6 +9,7 @@ export const orderService = {
    */
   createOrder: (data: {
     items: {
+      cartItemId: string;
       productId: string;
       productUnitId: string;
       quantity: number;
@@ -33,4 +34,14 @@ export const orderService = {
    * GET /api/orders/user/{userId}
    */
   getUserOrders: (userId: string) => api.get<Order[]>(`/orders/user/${userId}`),
+
+  /**update order status */
+  completeOrder: (orderId: string) => {
+  const userId = getUserId();
+  if (!userId) return Promise.reject("NOT_LOGIN");
+
+  return api.put(`/orders/${orderId}/complete`, null, {
+    params: { userId },
+  });
+},
 };

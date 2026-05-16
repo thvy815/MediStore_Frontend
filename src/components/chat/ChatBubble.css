@@ -11,7 +11,7 @@
   height: 58px;
   border-radius: 50%;
   border: none;
-  background-color: #16a34a;
+  background-color: #66BB69;
   color: white;
   font-size: 26px;
   cursor: pointer;
@@ -33,7 +33,7 @@
 }
 
 .chat-header {
-  background-color: #16a34a;
+  background-color: #388E3B;
   color: white;
   padding: 16px;
   display: flex;
@@ -137,14 +137,14 @@
 }
 
 .user-message .message-bubble {
-  background-color: #16a34a;
+  background-color: #167238;
   color: white;
   border-bottom-right-radius: 4px;
 }
 
 .other-message .message-bubble {
-  background-color: white;
-  background-color: #16a34a;
+  background-color: #C8E6C9;
+  color: #237D31;
   border-bottom-left-radius: 4px;
 }
 
@@ -152,8 +152,8 @@
   display: flex;
   gap: 8px;
   padding: 12px;
-  border-top: 1px solid #16a34a;
-  background: #16a34a;
+  border-top: 1px solid #A5D6A7;
+  background: #A5D6A7;
 }
 
 .chat-input-area input {
@@ -167,7 +167,7 @@
 .chat-input-area button {
   border: none;
   border-radius: 999px;
-  background-color: #16a34a;
+  background-color: #1B5E1F;
   color: white;
   padding: 0 16px;
   cursor: pointer;
@@ -190,4 +190,52 @@
 
 .end-chat-btn:hover {
   background: rgba(255, 255, 255, 0.28) !important;
+}
+
+.feedback-box {
+  padding: 16px;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.star {
+  border: none;
+  background: none;
+  font-size: 32px;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+.star.active {
+  color: #facc15;
+}
+
+.feedback-box textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  resize: none;
+}
+
+.submit-feedback-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #167238;
+  color: white;
+  cursor: pointer;
+}
+
+.submit-feedback-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
 }

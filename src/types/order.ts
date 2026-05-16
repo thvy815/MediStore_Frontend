@@ -1,4 +1,5 @@
 export interface CreateOrderItem {
+  cartItemId: string;
   productId: string;
   productUnitId: string;
   quantity: number;
@@ -11,6 +12,7 @@ export interface CreateOrderRequest {
 
 export interface OrderItem {
   productId: string;
+  orderItemId: string;
   unitId: string;
   productName: string;
   unitName: string;

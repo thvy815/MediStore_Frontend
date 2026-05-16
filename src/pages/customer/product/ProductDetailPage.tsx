@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Star } from "lucide-react";
 import { productDetailService } from "@/services/productDetailService";
 import { cartService } from "@/services/cartService";
 import type { ProductDetail } from "@/types/productDetail";
+import { productReviewService } from "@/services/productReviewService";
+import type { ProductReview } from "@/types/productReview";
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +14,9 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [reviewPage, setReviewPage] = useState(1);
+  const reviewsPerPage = 10;
 
   useEffect(() => {
     if (!id) return;
@@ -26,6 +31,8 @@ export default function ProductDetailPage() {
       try {
         const res = await productDetailService.getProductDetail(id);
         setProduct(res.data);
+        const reviewRes = await productReviewService.getReviewsByProduct(id);
+        setReviews(reviewRes.data);
         // Set default unit
         const defaultUnit = res.data.units.find(u => u.isDefault) || res.data.units[0];
         setSelectedUnit(defaultUnit?.id || "");
@@ -73,6 +80,11 @@ export default function ProductDetailPage() {
   if (!product) return <div className="min-h-screen flex justify-center items-center">Product not found</div>;
 
   const selectedUnitData = product.units.find(u => u.id === selectedUnit);
+  const totalReviewPages = Math.ceil(reviews.length / reviewsPerPage);
+  const currentReviews = reviews.slice(
+    (reviewPage - 1) * reviewsPerPage,
+    reviewPage * reviewsPerPage
+  );
 
   return (
     <div className="bg-[#f5f7fa] min-h-screen py-8">
@@ -228,6 +240,92 @@ export default function ProductDetailPage() {
             )}
           </div>
         </div>
+        <div className="bg-white rounded-2xl shadow-sm p-6 mt-8">
+  <div className="flex items-center gap-3 mb-6">
+    <h2 className="text-2xl font-semibold text-gray-900">
+      Product reviews
+    </h2>
+    <span className="text-sm text-gray-500">
+      ({reviews.length} reviews)
+    </span>
+  </div>
+
+  {reviews.length === 0 ? (
+    <p className="text-gray-500">Chưa có đánh giá nào cho sản phẩm này.</p>
+  ) : (
+    <>
+      <div className="space-y-5">
+        {currentReviews.map((review) => (
+          <div
+            key={review.id}
+            className="border-b border-gray-200 pb-5 last:border-b-0"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-medium">
+                {review.userName
+                  ?.split(" ")
+                  .map((word) => word[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </div>
+
+              <div className="flex-1">
+                <div className="font-medium text-gray-900">
+                  {review.userName}
+                </div>
+
+                <div className="flex gap-1 mt-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={14}
+                      className={
+                        star <= review.rating
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }
+                    />
+                  ))}
+                </div>
+
+                <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                  {review.comment}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {totalReviewPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => setReviewPage((p) => Math.max(1, p - 1))}
+            disabled={reviewPage === 1}
+            className="px-3 py-1 rounded-lg border disabled:opacity-50"
+          >
+            Trước
+          </button>
+
+          <span className="text-sm text-gray-600">
+            Trang {reviewPage} / {totalReviewPages}
+          </span>
+
+          <button
+            onClick={() =>
+              setReviewPage((p) => Math.min(totalReviewPages, p + 1))
+            }
+            disabled={reviewPage === totalReviewPages}
+            className="px-3 py-1 rounded-lg border disabled:opacity-50"
+          >
+            Sau
+          </button>
+        </div>
+      )}
+    </>
+  )}
+</div>
       </div>
     </div>
   );
