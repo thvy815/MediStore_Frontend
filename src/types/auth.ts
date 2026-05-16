@@ -15,11 +15,13 @@ export interface UserInfo {
   id: string;
   email: string;
   fullName: string;
-  roleId: string;
-  roleName: string;
+  roles: string[];
+  isVerified: boolean;
+  isActive: boolean;
 }
 
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: UserInfo;
 }

@@ -28,7 +28,8 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
       setSuccess("Login successful!");
       setTimeout(() => {
         onClose();
-        if (loggedUser.roleName === "Admin") {
+        const isAdmin = loggedUser.roles?.includes("Admin");
+        if (isAdmin) {
           navigate("/admin/medicines", { replace: true });
         } else {
           navigate("/customer/home", { replace: true });
