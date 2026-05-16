@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (data: LoginRequest): Promise<UserInfo> => {
     const res = await authService.login(data);
-    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("token", res.data.accessToken);
     localStorage.setItem("user", JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data.user;

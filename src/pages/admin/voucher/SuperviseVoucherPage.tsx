@@ -43,23 +43,6 @@ export default function SuperviseVoucherPage() {
   const [activeTab, setActiveTab] =
     useState<TabType>("conditions");
 
-  const fetchVouchers = async () => {
-    try {
-      const res =
-        await voucherService.getAll();
-
-      setVouchers(res.data);
-
-      if (res.data.length > 0) {
-        setSelectedVoucher(
-          res.data[0]
-        );
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   // lấy history của tất cả voucher
   const fetchAllHistory =
     async (
