@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, MapPin, Phone, Truck, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, Package, MapPin, Phone, Truck, Calendar, DollarSign,Star, X } from "lucide-react";
+import { productReviewService } from "@/services/productReviewService";
 import { useAuth } from "@/contexts/AuthContext";
 import { orderService } from "@/services/orderService";
 import type { Order } from "@/types/order";
@@ -10,6 +11,12 @@ export default function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+const [reviewOrder, setReviewOrder] = useState<Order | null>(null);
+const [selectedProductId, setSelectedProductId] = useState("");
+const [rating, setRating] = useState(0);
+const [comment, setComment] = useState("");
+const [selectedOrderItemId, setSelectedOrderItemId] = useState("");
 
   useEffect(() => {
     if (!user?.id) {
@@ -30,6 +37,67 @@ export default function OrdersPage() {
     loadOrders();
   }, [user, navigate]);
 
+  const handleCompleteOrder = async (orderId: string) => {
+  try {
+    await orderService.completeOrder(orderId);
+
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.orderId === orderId
+          ? { ...order, status: "completed" }
+          : order
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    alert("Không thể cập nhật trạng thái đơn hàng");
+  }
+};
+
+const openReviewModal = (order: Order) => {
+  if (order.status !== "completed") return;
+
+  const firstItem = order.items[0];
+
+  setReviewOrder(order);
+  setSelectedProductId(firstItem?.productId || "");
+  setSelectedOrderItemId(firstItem?.orderItemId || "");
+  setRating(0);
+  setComment("");
+  setShowReviewModal(true);
+};
+
+const handleSubmitReview = async () => {
+  if (!selectedProductId) {
+    alert("Vui lòng chọn sản phẩm cần đánh giá");
+    return;
+  }
+
+  if (rating === 0) {
+    alert("Vui lòng chọn số sao đánh giá");
+    return;
+  }
+
+  try {
+    await productReviewService.createReview({
+      orderItemId: selectedOrderItemId,
+      productId: selectedProductId,
+      rating,
+      comment,
+    });
+
+    alert("Cảm ơn bạn đã đánh giá sản phẩm!");
+    setShowReviewModal(false);
+    setReviewOrder(null);
+    setSelectedProductId("");
+    setRating(0);
+    setComment("");
+  } catch (error) {
+    console.error(error);
+    alert("Không thể gửi đánh giá. Có thể bạn đã đánh giá sản phẩm này rồi.");
+  }
+};
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -38,7 +106,7 @@ export default function OrdersPage() {
         return "bg-blue-100 text-blue-800";
       case "shipped":
         return "bg-purple-100 text-purple-800";
-      case "delivered":
+      case "completed":
         return "bg-green-100 text-green-800";
       case "cancelled":
         return "bg-red-100 text-red-800";
@@ -108,14 +176,25 @@ export default function OrdersPage() {
                         {order.status}
                       </span>
                     </div>
+
                     <div className="text-right">
                       <div className="text-lg font-bold text-green-600">
                         {formatCurrency(order.totalAmount)}
                       </div>
-                      <div className="text-sm text-gray-500">
+
+                      <div className="text-sm text-gray-500 mb-2">
                         <Calendar className="w-4 h-4 inline mr-1" />
                         {new Date().toLocaleDateString("vi-VN")}
                       </div>
+
+                      {order.status === "pending" && (
+                        <button
+                          onClick={() => handleCompleteOrder(order.orderId)}
+                          className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700"
+                        >
+                          Đã nhận hàng
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -171,12 +250,109 @@ export default function OrdersPage() {
                       ))}
                     </div>
                   </div>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={() => openReviewModal(order)}
+                      disabled={order.status !== "completed"}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                        order.status === "completed"
+                          ? "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      Viết đánh giá
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+      {showReviewModal && reviewOrder && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-800">Viết đánh giá</h2>
+        <button
+          onClick={() => setShowReviewModal(false)}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          <X size={22} />
+        </button>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Chọn sản phẩm
+        </label>
+        <select
+          value={selectedOrderItemId}
+          onChange={(e) => {
+            const item = reviewOrder.items.find(
+              (i) => i.orderItemId === e.target.value
+            );
+
+            setSelectedOrderItemId(e.target.value);
+            setSelectedProductId(item?.productId || "");
+          }}
+        >
+          {reviewOrder.items.map((item) => (
+            <option key={item.orderItemId} value={item.orderItemId}>
+              {item.productName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <p className="text-sm font-medium text-gray-700 mb-2">Đánh giá</p>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onClick={() => setRating(star)}
+              className="p-1"
+            >
+              <Star
+                size={30}
+                className={
+                  star <= rating
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-gray-300"
+                }
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Nhận xét
+        </label>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[100px]"
+        />
+      </div>
+
+      <button
+        onClick={handleSubmitReview}
+        disabled={rating === 0}
+        className={`w-full py-2 rounded-lg font-medium ${
+          rating === 0
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-green-600 text-white hover:bg-green-700"
+        }`}
+      >
+        Gửi đánh giá
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }

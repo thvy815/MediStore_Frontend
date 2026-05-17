@@ -40,6 +40,10 @@ export default function ChatBubble() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [endedSessionId, setEndedSessionId] = useState<string | null>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
 
   const currentUserId = getCurrentUserId();
 
@@ -116,6 +120,9 @@ export default function ChatBubble() {
     try {
       await chatService.closeSession(currentSession.id);
 
+      setEndedSessionId(currentSession.id);
+      setShowFeedback(true);
+
       chatSocketService.disconnect();
       setCurrentSession(null);
       setMessages([]);
@@ -123,6 +130,27 @@ export default function ChatBubble() {
     } catch (error) {
       console.error(error);
       alert("Không thể kết thúc phiên chat");
+    }
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!endedSessionId || rating === 0) return;
+
+    try {
+      await chatService.createFeedback({
+        sessionId: endedSessionId,
+        rating,
+        comment,
+      });
+
+      alert("Cảm ơn bạn đã đánh giá!");
+      setShowFeedback(false);
+      setEndedSessionId(null);
+      setRating(0);
+      setComment("");
+    } catch (error) {
+      console.error(error);
+      alert("Không thể gửi đánh giá");
     }
   };
 
@@ -141,11 +169,51 @@ export default function ChatBubble() {
     setInputMessage("");
   };
 
-  return (
-    <div className="chat-wrapper">
-      {isOpen && (
-        <div className="chat-box">
-          {!currentSession ? (
+            return (
+              <div className="chat-wrapper">
+                {isOpen && (
+                  <div className="chat-box">
+                    {showFeedback ? (
+            <>
+              <div className="chat-header">
+                <div>
+                  <h3>Đánh giá phiên chat</h3>
+                  <p>Bạn thấy trải nghiệm hỗ trợ như thế nào?</p>
+                </div>
+                <button onClick={() => setShowFeedback(false)}>×</button>
+              </div>
+
+              <div className="feedback-box">
+                <p>Bạn đánh giá phiên chat này bao nhiêu sao?</p>
+
+                <div className="rating-stars">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={star <= rating ? "star active" : "star"}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  placeholder="Chia sẻ trải nghiệm của bạn..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <button
+                  className="submit-feedback-btn"
+                  onClick={handleSubmitFeedback}
+                  disabled={rating === 0}
+                >
+                  Gửi đánh giá
+                </button>
+              </div>
+            </>
+          ) : !currentSession ? (
             <>
               <div className="chat-header">
                 <div>

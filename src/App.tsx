@@ -25,13 +25,16 @@ import RequireAdmin from "./components/auth/RequireAdmin";
 import VoucherStep from "./pages/customer/checkout/VoucherStep";
 import PaymentResult from "./pages/customer/PaymentResultPage";
 import ReportDashboardPage from "./pages/accountant/report/ReportDashboardPage";
+import SuperviseVoucherPage from "./pages/admin/voucher/SuperviseVoucherPage";
+import VoucherPage from "./pages/admin/voucher/VoucherPage";
+import TransactionHistoryPage from "./pages/admin/customer/TransactionHistoryPage";
 
 const App = () => {
   return (
     <>
     <Routes>
       {/* Redirect mặc định */}
-      <Route path="/" element={<Navigate to="/customer/home" replace />} />
+      <Route path="/" element={<Navigate to="/admin/medicines" replace />} />
 
       {/* ================= CUSTOMER ================= */}
       <Route
@@ -57,6 +60,8 @@ const App = () => {
           <Route path="payment" element={<PaymentStep />} />
           <Route path="voucher" element={<VoucherStep />} />
           <Route path="payment-result" element={<PaymentResult />} />
+
+        
         </Route>
       </Route>
 
@@ -74,6 +79,9 @@ const App = () => {
         <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
         <Route path="/admin/report" element={<ReportDashboardPage />} />
+        <Route path="/admin/voucher" element={<VoucherPage />}/>
+        <Route path="/admin/voucher/supervise" element={<SuperviseVoucherPage />}/>
+        <Route path="/admin/customer" element={<TransactionHistoryPage />}/>
       </Route>
     </Routes>
     <ChatBubble />
