@@ -7,7 +7,7 @@ const RequireAdmin = ({ children }: { children: React.JSX.Element }) => {
 
   if (!user) return <Navigate to="/customer/home" replace />;
 
-  const isAdmin = user.roles?.includes("Admin");
+  const isAdmin = user.roles?.includes("ADMIN");
  if (!isAdmin) return <Navigate to="/customer/home" replace />;
 
   return children;
