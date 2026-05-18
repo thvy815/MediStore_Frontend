@@ -1,14 +1,13 @@
 import { Outlet } from "react-router-dom";
 import CustomerHeader from "@/components/layout/CustomerHeader";
 import Footer from "./Footer";
+import ChatBubble from "@/components/chat/ChatBubble";
 
 const CustomerLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-[#f6faf7]">      
+    <div className="flex flex-col min-h-screen bg-[#f6faf7]">
       {/* Header */}
       <CustomerHeader />
-
-      
 
       {/* Main content */}
       <main className="flex-1">
@@ -17,6 +16,9 @@ const CustomerLayout = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* Chat bubble (chỉ customer mới có) */}
+      <ChatBubble />
     </div>
   );
 };

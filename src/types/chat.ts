@@ -2,21 +2,22 @@ export type ChatType = "ai" | "support" | "pharmacist";
 
 export interface ChatSession {
   id: string;
-  userId: string;
-  type: ChatType;
-  status: string;
+  userId: string | null;
+  type: "ai" | "support" | "pharmacist" | string;
+  status: "active" | "closed" | string;
   createdAt: string;
-  endedAt?: string;
+  endedAt: string | null;
 }
 
-export interface ChatMessage {
-  id: string;
+export type ChatMessage = {
+  id?: string;
+  messageId?: string;
   sessionId: string;
   senderId: string | null;
-  senderType: "user" | "staff" | "ai";
+  senderType: "user" | "staff" | "admin" | "ai";
   message: string;
-  createdAt: string;
-}
+  createdAt?: string;
+};
 
 export interface CreateChatSessionRequest {
   userId: string;

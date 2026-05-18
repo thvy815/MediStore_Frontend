@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 const menu = [
   { label: "Medicine", path: "admin/medicines" },
   { label: "Voucher", path: "admin/voucher" },
+  { label: "Chat", path: "admin/chat-sessions" },
   { label: "Storage", path: "admin/storage" },
   { label: "Delivery Methods", path: "admin/delivery-methods" },
   { label: "Payment Methods", path: "admin/payment-methods" },

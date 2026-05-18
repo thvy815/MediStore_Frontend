@@ -90,6 +90,30 @@ export const chatService = {
     return res.json();
   },
 
+  getAllSessions: async (): Promise<ChatSession[]> => {
+    const res = await fetch(`${API_URL}/sessions`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error("Không thể lấy tất cả phiên chat");
+    }
+
+    return res.json();
+  },
+
+  getSessionsByType: async (type: ChatType): Promise<ChatSession[]> => {
+    const res = await fetch(`${API_URL}/sessions/type/${type}`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error("Không thể lấy phiên chat theo loại");
+    }
+
+    return res.json();
+  },
+
   closeSession: async (sessionId: string): Promise<ChatSession> => {
     const res = await fetch(`${API_URL}/sessions/${sessionId}/close`, {
       method: "PUT",

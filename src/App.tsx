@@ -19,6 +19,7 @@ import ReviewStep from "./pages/customer/checkout/ReviewStep";
 import PaymentStep from "./pages/customer/checkout/PaymentStep";
 import ProfilePage from "@/pages/customer/profile/ProfilePage";
 import OrdersPage from "@/pages/customer/orders/OrdersPage";
+import ChatSessionManagement from "./pages/admin/chat/ChatSessionManagement";
 
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import RequireAdmin from "./components/auth/RequireAdmin";
@@ -76,9 +77,9 @@ const App = () => {
         <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
         <Route path="/admin/report" element={<ReportDashboardPage />} />
+        <Route path="/admin/chat-sessions" element={<ChatSessionManagement />} />
       </Route>
     </Routes>
-    <ChatBubble />
     </>
   );
 };
