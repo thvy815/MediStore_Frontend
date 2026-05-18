@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { orderService } from "@/services/orderService";
+import { paymentService } from "@/services/paymentService";
 import { useState } from "react";
 
 export default function ReviewStep() {
@@ -88,35 +89,21 @@ export default function ReviewStep() {
       }
 
       // 3. VNPay flow
-      const r = await fetch("http://localhost:8080/api/payments/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          paymentMethodId: payment.id,
-          amount: total,
-        }),
-      });
+      const paymentRes = await paymentService.createPayment(orderId);
 
-      if (!r.ok) {
-        const err = await r.text();
-        throw new Error(err);
-      }
+        console.log("VNPay response:", paymentRes);
 
-      const paymentRes = await r.json();
+        const paymentUrl = paymentRes.paymentUrl;
 
-      console.log("VNPay response:", paymentRes);
+        if (!paymentUrl) {
+          console.error("Invalid VNPay response:", paymentRes);
 
-      const paymentUrl =
-        paymentRes?.paymentUrl || paymentRes?.data?.paymentUrl;
+          alert("Không tạo được VNPay URL");
 
-      if (!paymentUrl) {
-        console.error("Invalid VNPay response:", paymentRes);
-        alert("Không tạo được VNPay URL");
-        return;
-      }
+          return;
+        }
 
-      window.location.href = paymentUrl;
+        window.location.href = paymentUrl;
 
       // backend trả về URL VNPay
       window.location.href = paymentRes.paymentUrl;
