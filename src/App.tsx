@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import AdminLayout from "@/components/layout/AdminLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import CustomerLayout from "@/components/layout/CustomerLayout";
 import MedicinesPage from "@/pages/admin/medicine/MedicinesPage";
 import StoragePage from "@/pages/admin/storage/StoragePage";
@@ -21,7 +21,7 @@ import OrdersPage from "@/pages/customer/orders/OrdersPage";
 import ChatSessionManagement from "./pages/admin/chat/ChatSessionManagement";
 
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
-import RequireAdmin from "./components/auth/RequireAdmin";
+import RequireStaff from "./components/auth/RequireStaff";
 import VoucherStep from "./pages/customer/checkout/VoucherStep";
 import PaymentResult from "./pages/customer/PaymentResultPage";
 import ReportDashboardPage from "./pages/accountant/report/ReportDashboardPage";
@@ -34,7 +34,7 @@ const App = () => {
     <>
     <Routes>
       {/* Redirect mặc định */}
-      <Route path="/" element={<Navigate to="/admin/medicines" replace />} />
+      <Route path="/" element={<Navigate to="/customer/home" replace />} />
 
       {/* ================= CUSTOMER ================= */}
       <Route
@@ -47,42 +47,42 @@ const App = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/customer/home" element={<CustomerHome />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/customer/cart" element={<CartPage />} />
+        <Route path="/customer/profile" element={<ProfilePage />} />
+        <Route path="/customer/orders" element={<OrdersPage />} />
 
         {/* Checkout pages */}
-        <Route path="/checkout" element={<CheckoutPage />}>
-          <Route index element={<Navigate to="shipping" replace />} />
-          <Route path="shipping" element={<ShippingStep />} />
-          <Route path="delivery" element={<DeliveryStep />} />
-          <Route path="review" element={<ReviewStep />} />
-          <Route path="payment" element={<PaymentStep />} />
-          <Route path="voucher" element={<VoucherStep />} />
-          <Route path="payment-result" element={<PaymentResult />} />
-
-        
+        <Route path="/checkout" 
+          element={<CheckoutPage />}>
+            <Route index element={<Navigate to="shipping" replace />} />
+            <Route path="shipping" element={<ShippingStep />} />
+            <Route path="delivery" element={<DeliveryStep />} />
+            <Route path="review" element={<ReviewStep />} />
+            <Route path="payment" element={<PaymentStep />} />
+            <Route path="voucher" element={<VoucherStep />} />
+            <Route path="payment-result" element={<PaymentResult />} />
         </Route>
       </Route>
 
       {/* ================= ADMIN ================= */}
       <Route
+        path="/dashboard"
         element={
-          <RequireAdmin>
-            <AdminLayout />
-          </RequireAdmin>
+          <RequireStaff>
+            <DashboardLayout />
+          </RequireStaff>
         }
       >
-        <Route path="/admin/medicines" element={<MedicinesPage />} />
-        <Route path="/admin/storage" element={<StoragePage />} />
-        <Route path="/admin/inventory" element={<InventoryPage />} />
-        <Route path="/admin/delivery-methods" element={<DeliveryMethodsPage />} />
-        <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
-        <Route path="/admin/report" element={<ReportDashboardPage />} />
-        <Route path="/admin/chat-sessions" element={<ChatSessionManagement />} />
-        <Route path="/admin/voucher" element={<VoucherPage />}/>
-        <Route path="/admin/voucher/supervise" element={<SuperviseVoucherPage />}/>
-        <Route path="/admin/customer" element={<TransactionHistoryPage />}/>
+        <Route path="medicines" element={<MedicinesPage />} />
+        <Route path="storage" element={<StoragePage />} />
+        <Route path="inventory" element={<InventoryPage />} />
+        <Route path="delivery-methods" element={<DeliveryMethodsPage />} />
+        <Route path="payment-methods" element={<PaymentMethodsPage />} />
+        <Route path="report" element={<ReportDashboardPage />} />
+        <Route path="chat-sessions" element={<ChatSessionManagement />} />
+        <Route path="voucher" element={<VoucherPage />}/>
+        <Route path="voucher/supervise" element={<SuperviseVoucherPage />}/>
+        <Route path="customer" element={<TransactionHistoryPage />}/>
       </Route>
     </Routes>
     </>
