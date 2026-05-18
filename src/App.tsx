@@ -19,6 +19,7 @@ import PaymentStep from "./pages/customer/checkout/PaymentStep";
 import ProfilePage from "@/pages/customer/profile/ProfilePage";
 import OrdersPage from "@/pages/customer/orders/OrdersPage";
 import ChatSessionManagement from "./pages/admin/chat/ChatSessionManagement";
+import OrderTrackingPage from "@/pages/admin/customer/OrderTrackingPage";
 
 import { CheckoutProvider } from "@/contexts/CheckoutContext";
 import RequireAdmin from "./components/auth/RequireAdmin";
@@ -83,6 +84,7 @@ const App = () => {
         <Route path="/admin/voucher" element={<VoucherPage />}/>
         <Route path="/admin/voucher/supervise" element={<SuperviseVoucherPage />}/>
         <Route path="/admin/customer" element={<TransactionHistoryPage />}/>
+        <Route path="/admin/customer/order" element={<OrderTrackingPage />} />
       </Route>
     </Routes>
     </>
