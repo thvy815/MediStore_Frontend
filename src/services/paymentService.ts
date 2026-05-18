@@ -4,6 +4,15 @@ import type { Payment } from "@/types/payment";
 export const paymentService = {
   getAll: async (): Promise<Payment[]> => {
     const res = await api.get<Payment[]>("/payments/all-history");
+
+    return res.data;
+  },
+
+  createPayment: async (orderId: string) => {
+    const res = await api.post("/payments/create", {
+      orderId,
+    });
+
     return res.data;
   },
 };
