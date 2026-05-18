@@ -14,7 +14,7 @@ export default function VoucherStep() {
   useEffect(() => {
     const loadVouchers = async () => {
       try {
-        const res = await voucherService.getVouchers();
+       const res = await voucherService.getAll();
         setVouchers(
   res.data.filter((v: Voucher) => v.status === "active")
 );

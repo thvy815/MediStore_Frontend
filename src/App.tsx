@@ -26,6 +26,9 @@ import RequireAdmin from "./components/auth/RequireAdmin";
 import VoucherStep from "./pages/customer/checkout/VoucherStep";
 import PaymentResult from "./pages/customer/PaymentResultPage";
 import ReportDashboardPage from "./pages/accountant/report/ReportDashboardPage";
+import SuperviseVoucherPage from "./pages/admin/voucher/SuperviseVoucherPage";
+import VoucherPage from "./pages/admin/voucher/VoucherPage";
+import TransactionHistoryPage from "./pages/admin/customer/TransactionHistoryPage";
 
 const App = () => {
   return (
@@ -78,6 +81,9 @@ const App = () => {
         <Route path="/admin/payment-methods" element={<PaymentMethodsPage />} />
         <Route path="/admin/report" element={<ReportDashboardPage />} />
         <Route path="/admin/chat-sessions" element={<ChatSessionManagement />} />
+        <Route path="/admin/voucher" element={<VoucherPage />}/>
+        <Route path="/admin/voucher/supervise" element={<SuperviseVoucherPage />}/>
+        <Route path="/admin/customer" element={<TransactionHistoryPage />}/>
       </Route>
     </Routes>
     </>
