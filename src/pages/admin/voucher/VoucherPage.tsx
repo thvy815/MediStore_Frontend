@@ -77,7 +77,7 @@ export default function VoucherPage() {
 
         <div className="space-y-2 mt-6">
           <Link
-            to="/admin/voucher"
+            to="/dashboard/voucher"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
               "/admin/voucher"
@@ -91,7 +91,7 @@ export default function VoucherPage() {
           </Link>
 
           <Link
-            to="/admin/voucher/supervise"
+            to="/dashboard/voucher/supervise"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
               "/admin/voucher/supervise"

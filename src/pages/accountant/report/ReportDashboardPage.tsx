@@ -23,21 +23,20 @@ export default function ReportDashboardPage() {
   useEffect(() => {
     const loadReports = async () => {
       try {
-        const [
-          revenueRes,
-          bestSellingRes,
-          inventoryRes,
-        ] = await Promise.all([
+        const [revenueRes, bestSellingRes, inventoryRes] = await Promise.all([
           reportService.getRevenueByMonth(),
           reportService.getBestSellingProducts(),
           reportService.getInventoryReport(),
         ]);
 
-        setRevenue(revenueRes.data);
-        setBestSelling(bestSellingRes.data);
-        setInventory(inventoryRes.data);
+        setRevenue(Array.isArray(revenueRes) ? revenueRes : []);
+        setBestSelling(Array.isArray(bestSellingRes) ? bestSellingRes : []);
+        setInventory(Array.isArray(inventoryRes) ? inventoryRes : []);
       } catch (err) {
         console.error("Failed to load reports", err);
+        setRevenue([]);
+        setBestSelling([]);
+        setInventory([]);
       } finally {
         setLoading(false);
       }
@@ -47,34 +46,28 @@ export default function ReportDashboardPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-6 text-lg font-semibold">
-        Loading reports...
-      </div>
-    );
+    return <div className="p-6 text-lg font-semibold">Loading reports...</div>;
   }
 
   const totalRevenue = revenue.reduce(
-    (sum, item) => sum + item.revenue,
+    (sum, item) => sum + Number(item.revenue || 0),
     0
   );
 
   const totalSold = bestSelling.reduce(
-    (sum, item) => sum + item.quantitySold,
+    (sum, item) => sum + Number(item.quantitySold || 0),
     0
   );
 
   const totalStock = inventory.reduce(
-    (sum, item) => sum + item.remainingQuantity,
+    (sum, item) => sum + Number(item.remainingQuantity || 0),
     0
   );
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Report Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold">Report Dashboard</h1>
 
         <p className="text-gray-500 mt-2">
           Revenue, inventory and product analytics
@@ -84,18 +77,12 @@ export default function ReportDashboardPage() {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <StatsCard
           title="Total Revenue"
-          value={`${totalRevenue.toLocaleString()}đ`}
+          value={`${totalRevenue.toLocaleString("vi-VN")}đ`}
         />
 
-        <StatsCard
-          title="Products Sold"
-          value={totalSold.toString()}
-        />
+        <StatsCard title="Products Sold" value={totalSold.toString()} />
 
-        <StatsCard
-          title="Inventory Stock"
-          value={totalStock.toString()}
-        />
+        <StatsCard title="Inventory Stock" value={totalStock.toString()} />
       </div>
 
       <div className="mb-8">
