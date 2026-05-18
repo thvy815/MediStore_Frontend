@@ -78,9 +78,9 @@ export default function TransactionHistoryPage() {
 
         <div className="space-y-2 mt-6">
           <Link
-            to="/admin/customer"
+            to="/dashboard/customer"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-              location.pathname === "/admin/customer"
+              location.pathname === "/dashboard/customer"
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-gray-100 text-gray-700"
             }`}
@@ -90,10 +90,10 @@ export default function TransactionHistoryPage() {
           </Link>
 
           <Link
-            to="/admin/customer/order"
+            to="/dashboard/customer/order"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
-              "/admin/customer/order"
+              "/dashboard/customer/order"
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-gray-100 text-gray-700"
             }`}
@@ -103,10 +103,10 @@ export default function TransactionHistoryPage() {
           </Link>
 
           <Link
-            to="/admin/customer/list"
+            to="/dashboard/customer/list"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
-              "/admin/customer/list"
+              "/dashboard/customer/list"
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-gray-100 text-gray-700"
             }`}

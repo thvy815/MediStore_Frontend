@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "./AdminHeader";
+import AppHeader from "@/components/layout/AppHeader";
 import Footer from "./Footer";
 import DashboardNavbar from "../navigationBar/DashboardNavbar";
 
@@ -9,7 +9,7 @@ const DashboardLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       
       {/* Header tự lấy auth */}
-      <Header />
+      <AppHeader />
 
       {/* Navbar */}
       <DashboardNavbar />

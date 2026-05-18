@@ -10,12 +10,12 @@ const AdminSidebar = () => {
       <nav className="space-y-2 text-sm">
         <SidebarItem
           label="Storage"
-          onClick={() => navigate("/admin/storage")}
+          onClick={() => navigate("/dashboard/storage")}
         />
 
         <SidebarItem
           label="Track Inventory"
-          onClick={() => navigate("/admin/inventory")}
+          onClick={() => navigate("/dashboard/inventory")}
         />
       </nav>
     </aside>

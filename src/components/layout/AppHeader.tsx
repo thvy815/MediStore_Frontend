@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoginModal from "@/components/auth/LoginModal";
 import RegisterModal from "../auth/RegisterModal";
 
-const CustomerHeader = () => {
+const AppHeader = () => {
   const navigate = useNavigate();
 
   const { user, logout } = useAuth();
@@ -28,6 +28,8 @@ const CustomerHeader = () => {
     }
   };
 
+  const isCustomer = user?.roles?.includes("CUSTOMER") || !user;
+
   return (
     <>
       <header className="bg-[#E8F5E9] shadow-md">
@@ -36,34 +38,41 @@ const CustomerHeader = () => {
           {/* Logo */}
           <div
             className="flex items-center cursor-pointer"
-            onClick={() => navigate("/customer/home")}
+            onClick={() => navigate(isCustomer ? "/customer/home" 
+                                               : "/dashboard/medicines")}
           >
             <img src="/logo.png" alt="MediStore Logo" className="h-14 w-auto" />
           </div>
 
-          {/* Search */}
-          <div className="flex-1 mx-8 relative">
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search medicine..."
-              className="w-full rounded-full border px-5 py-2 pr-10 focus:outline-none"
-            />
+          {/* Search chỉ customer */}
+          {isCustomer && (
+            <div className="flex-1 mx-8 relative">
+                <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Search medicine..."
+                className="w-full rounded-full border px-5 py-2 pr-10 focus:outline-none"
+                />
 
-            <Search
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-              onClick={handleSearch}
-            />
-          </div>
+                <Search
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                onClick={handleSearch}
+                />
+            </div>
+          )}
 
-          {/* Actions */}
+          {/* Right actions */}
           <div className="flex items-center gap-4">
-            <ShoppingCart
-              className="cursor-pointer text-green-900"
-              onClick={() => navigate("/cart")}
-            />
+
+            {/* Cart chỉ customer */}
+            {isCustomer && (
+                <ShoppingCart
+                    className="cursor-pointer text-green-900"
+                    onClick={() => navigate("/cart")}
+                />
+            )}
 
             {user ? (
               <div
@@ -82,6 +91,7 @@ const CustomerHeader = () => {
                   <div className="absolute right-0 top-full pt-2 w-52 z-50">
                     <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2">
                       
+                      {/* Profile */}
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
@@ -90,9 +100,10 @@ const CustomerHeader = () => {
                         className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
                       >
                         <User size={16} className="text-gray-600" />
-                        <span className="text-gray-700">Thông tin cá nhân</span>
+                        <span className="text-gray-700">My Profile</span>
                       </button>
 
+                    {isCustomer && (
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
@@ -101,8 +112,9 @@ const CustomerHeader = () => {
                         className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
                       >
                         <Package size={16} className="text-gray-600" />
-                        <span className="text-gray-700">Đơn hàng của tôi</span>
+                        <span className="text-gray-700">My Orders</span>
                       </button>
+                    )}
 
                       <hr className="my-2 border-gray-200" />
 
@@ -110,7 +122,7 @@ const CustomerHeader = () => {
                         onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 transition-colors"
                       >
-                        <span>Đăng xuất</span>
+                        <span>Logout</span>
                       </button>
                     </div>
                   </div>
@@ -157,4 +169,4 @@ const CustomerHeader = () => {
   );
 };
 
-export default CustomerHeader;
+export default AppHeader;

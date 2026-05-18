@@ -30,7 +30,7 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
         onClose();
         const isAdmin = loggedUser.roles?.includes("ADMIN");
         if (isAdmin) {
-          navigate("/admin/medicines", { replace: true });
+          navigate("/dashboard/medicines", { replace: true });
         } else {
           navigate("/customer/home", { replace: true });
         }

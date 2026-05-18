@@ -12,13 +12,11 @@ const menuByRole: Record<string, MenuItem[]> = {
     { label: "Medicine", path: "/dashboard/medicines" },
     { label: "Voucher", path: "/dashboard/voucher" },
     { label: "Chat", path: "/dashboard/chat-sessions" },
-    { label: "Storage", path: "/dashboard/storage" },
-    { label: "Inventory", path: "/dashboard/inventory" },
+    { label: "Inventory", path: "/dashboard/storage" },
     { label: "Delivery Methods", path: "/dashboard/delivery-methods" },
     { label: "Payment Methods", path: "/dashboard/payment-methods" },
     { label: "Report", path: "/dashboard/report" },
     { label: "Customer", path: "/dashboard/customer" },
-    { label: "Profile Setting", path: "/dashboard/profile" },
   ],
 
   PHARMACIST: [
