@@ -1,3 +1,4 @@
+import { api } from "@/api/axios";
 import type {
   ChatMessage,
   ChatSession,
@@ -5,126 +6,71 @@ import type {
   SendChatMessageRequest,
 } from "@/types/chat";
 
-const API_URL = "http://localhost:8080/api/chat";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
-
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-};
-
 export const chatService = {
   createSession: async (
     userId: string,
     type: ChatType
   ): Promise<ChatSession> => {
-    const res = await fetch(`${API_URL}/sessions`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ userId, type }),
+    const res = await api.post<ChatSession>("/chat/sessions", {
+      userId,
+      type,
     });
 
-    if (!res.ok) {
-      throw new Error("Không thể tạo phiên chat");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   getSessionsByUser: async (userId: string): Promise<ChatSession[]> => {
-    const res = await fetch(`${API_URL}/sessions/user/${userId}`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await api.get<ChatSession[]>(`/chat/sessions/user/${userId}`);
 
-    if (!res.ok) {
-      throw new Error("Không thể lấy danh sách phiên chat");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   getActiveSessionsByType: async (
     type: ChatType
   ): Promise<ChatSession[]> => {
-    const res = await fetch(`${API_URL}/sessions/type/${type}/active`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await api.get<ChatSession[]>(
+      `/chat/sessions/type/${type}/active`
+    );
 
-    if (!res.ok) {
-      throw new Error("Không thể lấy phiên chat đang hoạt động");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   getMessagesBySession: async (
     sessionId: string
   ): Promise<ChatMessage[]> => {
-    const res = await fetch(`${API_URL}/sessions/${sessionId}/messages`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await api.get<ChatMessage[]>(
+      `/chat/sessions/${sessionId}/messages`
+    );
 
-    if (!res.ok) {
-      throw new Error("Không thể lấy tin nhắn");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   sendMessage: async (
     data: SendChatMessageRequest
   ): Promise<ChatMessage> => {
-    const res = await fetch(`${API_URL}/messages`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
+    const res = await api.post<ChatMessage>("/chat/messages", data);
 
-    if (!res.ok) {
-      throw new Error("Không thể gửi tin nhắn");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   getAllSessions: async (): Promise<ChatSession[]> => {
-    const res = await fetch(`${API_URL}/sessions`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await api.get<ChatSession[]>("/chat/sessions");
 
-    if (!res.ok) {
-      throw new Error("Không thể lấy tất cả phiên chat");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   getSessionsByType: async (type: ChatType): Promise<ChatSession[]> => {
-    const res = await fetch(`${API_URL}/sessions/type/${type}`, {
-      headers: getAuthHeaders(),
-    });
+    const res = await api.get<ChatSession[]>(`/chat/sessions/type/${type}`);
 
-    if (!res.ok) {
-      throw new Error("Không thể lấy phiên chat theo loại");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   closeSession: async (sessionId: string): Promise<ChatSession> => {
-    const res = await fetch(`${API_URL}/sessions/${sessionId}/close`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-    });
+    const res = await api.put<ChatSession>(
+      `/chat/sessions/${sessionId}/close`
+    );
 
-    if (!res.ok) {
-      throw new Error("Không thể đóng phiên chat");
-    }
-
-    return res.json();
+    return res.data;
   },
 
   createFeedback: async (data: {
@@ -132,16 +78,8 @@ export const chatService = {
     rating: number;
     comment: string;
   }): Promise<string> => {
-    const res = await fetch(`${API_URL}/feedbacks`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
+    const res = await api.post<string>("/chat/feedbacks", data);
 
-    if (!res.ok) {
-      throw new Error("Không thể gửi đánh giá");
-    }
-
-    return res.text();
+    return res.data;
   },
 };

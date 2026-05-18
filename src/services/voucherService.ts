@@ -1,25 +1,44 @@
-import axios from "axios";
+import { api } from "@/api/axios";
 import type {
   Voucher,
   VoucherHistory,
   VoucherRequest,
 } from "@/types/voucher";
 
-const API = "http://localhost:8080/api/vouchers";
-
 export const voucherService = {
-  getAll: () => axios.get<Voucher[]>(API),
+  getAll: async (): Promise<Voucher[]> => {
+    const res = await api.get<Voucher[]>("/vouchers");
+    return res.data;
+  },
 
-  getById: (id: string) => axios.get<Voucher>(`${API}/${id}`),
+  getById: async (id: string): Promise<Voucher> => {
+    const res = await api.get<Voucher>(`/vouchers/${id}`);
+    return res.data;
+  },
 
-  create: (data: VoucherRequest) =>
-    axios.post<Voucher>(API, data),
+  create: async (data: VoucherRequest): Promise<Voucher> => {
+    const res = await api.post<Voucher>("/vouchers", data);
+    return res.data;
+  },
 
-  update: (id: string, data: VoucherRequest) =>
-    axios.put<Voucher>(`${API}/${id}`, data),
+  update: async (
+    id: string,
+    data: VoucherRequest
+  ): Promise<Voucher> => {
+    const res = await api.put<Voucher>(`/vouchers/${id}`, data);
+    return res.data;
+  },
 
-  delete: (id: string) => axios.delete(`${API}/${id}`),
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/vouchers/${id}`);
+  },
 
-  getHistory: (voucherId: string) =>
-    axios.get<VoucherHistory[]>(`${API}/${voucherId}/history`),
+  getHistory: async (
+    voucherId: string
+  ): Promise<VoucherHistory[]> => {
+    const res = await api.get<VoucherHistory[]>(
+      `/vouchers/${voucherId}/history`
+    );
+    return res.data;
+  },
 };

@@ -1,40 +1,45 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/reports";
+import { api } from "@/api/axios";
 
 export const reportService = {
   getRevenueByMonth: async () => {
-    return axios.get(`${API_URL}/revenue/month`);
+    const res = await api.get("/reports/revenue/month");
+    return res.data;
   },
 
   getRevenueByDay: async (startDate: string, endDate: string) => {
-    return axios.get(`${API_URL}/revenue/day`, {
+    const res = await api.get("/reports/revenue/day", {
       params: {
         startDate,
         endDate,
       },
     });
+    return res.data;
   },
 
   getRevenueByProduct: async () => {
-    return axios.get(`${API_URL}/revenue/product`);
+    const res = await api.get("/reports/revenue/product");
+    return res.data;
   },
 
   getBestSellingProducts: async () => {
-    return axios.get(`${API_URL}/best-selling`);
+    const res = await api.get("/reports/best-selling");
+    return res.data;
   },
 
   getInventoryReport: async () => {
-    return axios.get(`${API_URL}/inventory`);
+    const res = await api.get("/reports/inventory");
+    return res.data;
   },
 
   getLowStockProducts: async (threshold = 20) => {
-    return axios.get(`${API_URL}/inventory/low-stock`, {
+    const res = await api.get("/reports/inventory/low-stock", {
       params: { threshold },
     });
+    return res.data;
   },
 
   getInventorySalesRatio: async () => {
-    return axios.get(`${API_URL}/inventory/sales-ratio`);
+    const res = await api.get("/reports/inventory/sales-ratio");
+    return res.data;
   },
 };

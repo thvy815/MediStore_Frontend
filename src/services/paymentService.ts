@@ -1,8 +1,9 @@
-import axios from "axios";
+import { api } from "@/api/axios";
 import type { Payment } from "@/types/payment";
 
-const API = "http://localhost:8080/api/payments";
-
 export const paymentService = {
-  getAll: () => axios.get<Payment[]>(`${API}/all-history`),
+  getAll: async (): Promise<Payment[]> => {
+    const res = await api.get<Payment[]>("/payments/all-history");
+    return res.data;
+  },
 };

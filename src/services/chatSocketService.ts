@@ -11,8 +11,18 @@ export const chatSocketService = {
   ) => {
     stompClient?.deactivate();
 
+    const token = localStorage.getItem("accessToken");
+
     stompClient = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws-chat"),
+      webSocketFactory: () =>
+        new SockJS(`${import.meta.env.VITE_API_URL}/ws-chat`),
+
+      connectHeaders: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+
       reconnectDelay: 5000,
 
       onConnect: () => {
