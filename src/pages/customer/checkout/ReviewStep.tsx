@@ -83,7 +83,7 @@ export default function ReviewStep() {
       // 2. Nếu không phải VNPay → done luôn
       if (payment.code !== "vnpay") {
         alert("Order placed successfully!");
-        navigate("/orders");
+        navigate("/customer/orders");
         return;
       }
 

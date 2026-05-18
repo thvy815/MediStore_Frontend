@@ -70,7 +70,7 @@ const AppHeader = () => {
             {isCustomer && (
                 <ShoppingCart
                     className="cursor-pointer text-green-900"
-                    onClick={() => navigate("/cart")}
+                    onClick={() => navigate("/customer/cart")}
                 />
             )}
 
@@ -95,7 +95,7 @@ const AppHeader = () => {
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
-                          navigate("/profile");
+                          navigate("/customer/profile");
                         }}
                         className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
                       >
@@ -107,7 +107,7 @@ const AppHeader = () => {
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
-                          navigate("/orders");
+                          navigate("/customer/orders");
                         }}
                         className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
                       >
