@@ -16,7 +16,7 @@ export default function VoucherStep() {
       try {
        const res = await voucherService.getAll();
         setVouchers(
-  res.data.filter((v: Voucher) => v.status === "active")
+  res.filter((v: Voucher) => v.status === "active")
 );
       } catch (err) {
         console.error("Failed to load vouchers", err);

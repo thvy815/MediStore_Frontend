@@ -134,7 +134,7 @@ export default function VoucherConditionForm({
           );
 
         onUpdated?.(
-          res.data
+          res
         );
 
         setIsEditing(false);
