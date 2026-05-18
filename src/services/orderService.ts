@@ -35,13 +35,23 @@ export const orderService = {
    */
   getUserOrders: (userId: string) => api.get<Order[]>(`/orders/user/${userId}`),
 
-  /**update order status */
-  completeOrder: (orderId: string) => {
-  const userId = getUserId();
-  if (!userId) return Promise.reject("NOT_LOGIN");
+  getAll: () => {
+    return api.get("/orders");
+  },
 
-  return api.put(`/orders/${orderId}/complete`, null, {
-    params: { userId },
-  });
-},
+  markDelivered: (orderId: string) => {
+    return api.put(`/orders/${orderId}/delivered`);
+  },
+
+  completeOrder: (orderId: string, userId: string) => {
+    return api.put(`/orders/${orderId}/complete`, null, {
+      params: { userId },
+    });
+  },
+
+  cancelOrder: (orderId: string, userId: string) => {
+    return api.put(`/orders/${orderId}/cancel`, null, {
+      params: { userId },
+    });
+  },
 };
