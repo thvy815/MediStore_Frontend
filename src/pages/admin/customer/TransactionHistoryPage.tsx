@@ -26,7 +26,7 @@ export default function TransactionHistoryPage() {
   const fetchPayments = async () => {
     try {
       const res = await paymentService.getAll();
-      setPayments(res.data);
+      setPayments(res);
     } catch (err) {
       console.error(err);
     }
@@ -36,7 +36,8 @@ export default function TransactionHistoryPage() {
     fetchPayments();
   }, []);
 
-  const filtered = payments.filter((p) => {
+  const filtered = payments
+  .filter((p) => {
     const customerMatch =
       !customerKeyword ||
       (p.customerName || "")
@@ -50,14 +51,20 @@ export default function TransactionHistoryPage() {
         .includes(methodKeyword.toLowerCase());
 
     const dateMatch =
-        !dateKeyword ||
-        (p.createdAt &&
-            p.createdAt.slice(0, 10) === dateKeyword);
+      !dateKeyword ||
+      (p.createdAt &&
+        p.createdAt.slice(0, 10) === dateKeyword);
 
     return (
       customerMatch &&
       methodMatch &&
       dateMatch
+    );
+  })
+  .sort((a, b) => {
+    return (
+      new Date(b.createdAt || 0).getTime() -
+      new Date(a.createdAt || 0).getTime()
     );
   });
 

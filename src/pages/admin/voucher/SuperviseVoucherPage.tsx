@@ -61,7 +61,7 @@ export default function SuperviseVoucherPage() {
 
         const mergedHistory =
           responses.flatMap(
-            (res) => res.data
+            (res) => res
           );
 
         setHistory(
@@ -80,7 +80,7 @@ export default function SuperviseVoucherPage() {
             await voucherService.getAll();
 
           const voucherData =
-            res.data;
+            res;
 
           setVouchers(
             voucherData

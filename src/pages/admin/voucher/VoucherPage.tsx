@@ -34,7 +34,7 @@ export default function VoucherPage() {
     try {
       const res = await voucherService.getAll();
 
-      setVouchers(res.data);
+      setVouchers(res);
     } catch (err) {
       console.error(err);
     }
