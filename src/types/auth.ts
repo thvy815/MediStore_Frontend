@@ -1,3 +1,4 @@
+// request
 export interface RegisterRequest {
   email: string;
   password: string;
@@ -6,8 +7,17 @@ export interface RegisterRequest {
 }
 
 export interface LoginRequest {
-  email: string;
+  identifier: string;
   password: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
 }
 
 // response
@@ -25,3 +35,5 @@ export interface AuthResponse {
   refreshToken: string;
   user: UserInfo;
 }
+
+

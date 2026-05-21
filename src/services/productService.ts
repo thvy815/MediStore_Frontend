@@ -2,38 +2,29 @@ import { api } from "@/api/axios";
 import type { ProductRequest } from "@/types/product";
 
 export const productService = {
-  getAllAdmin: () => api.get("/products/admin"),
-
-  searchMedicine: (keyword: string) =>
-    api.get(`/products/search?keyword=${keyword}`),
+  // ===== ADMIN =====
+  getAllAdmin: () => api.get("/admin/products"),
 
   create: (data: ProductRequest) =>
-    api.post("/products", data),
+    api.post("/admin/products", data),
 
   update: (id: string, data: ProductRequest) =>
-    api.put(`/products/${id}`, data),
+    api.put(`/admin/products/${id}`, data),
 
   updateActive: (id: string, isActive: boolean) =>
-    api.patch(`/products/${id}/active`, { isActive }),
+    api.patch(`/admin/products/${id}/active`, { isActive }),
 
   delete: (id: string) =>
-    api.delete(`/products/${id}`),
+    api.delete(`/admin/products/${id}`),
 
-  // ===== ADD: CUSTOMER PRODUCT APIs =====
+  // ===== CUSTOMER =====
+  searchMedicine: (keyword: string) =>
+    api.get(`/customer/products/search?keyword=${keyword}`),
 
-  /**
-   * CUSTOMER
-   * Lấy danh sách sản phẩm đang active
-   * BE: GET /api/products/customer/active
-   */
   getActiveProducts: () =>
-    api.get("/products/customer/active"),
+    api.get("/customer/products/active"),
 
-  /**
-   * CUSTOMER
-   * Lấy danh sách unit đang active của 1 product
-   * BE: GET /api/products/{productId}/units
-   */
+  // Lấy danh sách unit đang active của 1 product
   getActiveUnitsByProduct: (productId: string) =>
     api.get(`/products/${productId}/units`),
 

@@ -29,6 +29,7 @@ import ReportDashboardPage from "./pages/accountant/report/ReportDashboardPage";
 import SuperviseVoucherPage from "./pages/admin/voucher/SuperviseVoucherPage";
 import VoucherPage from "./pages/admin/voucher/VoucherPage";
 import TransactionHistoryPage from "./pages/admin/customer/TransactionHistoryPage";
+import ResetPasswordPage from "@/pages/customer/ResetPasswordPage";
 
 const App = () => {
   return (
@@ -36,6 +37,9 @@ const App = () => {
     <Routes>
       {/* Redirect mặc định */}
       <Route path="/" element={<Navigate to="/customer/home" replace />} />
+
+      {/* Reset Password */}
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* ================= CUSTOMER ================= */}
       <Route

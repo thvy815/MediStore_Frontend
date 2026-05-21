@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { authService } from "@/services/authService";
 import { User, Mail, Phone, Lock, X } from "lucide-react";
+import VerifyEmailModal from "./VerifyMailModal";
 
 interface Props {
   onClose: () => void;
@@ -18,6 +19,7 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -33,7 +35,8 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
     try {
       setLoading(true);
       await authService.register(form);
-      setSuccess("Registration successful!");
+      setShowVerifyModal(true);
+      setSuccess("Registration successful! Please verify your email before login.");
       setTimeout(() => {
         onOpenLogin();
       }, 1000);
@@ -43,6 +46,15 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
       setLoading(false);
     }
   };
+
+  if (showVerifyModal) {
+    return (
+      <VerifyEmailModal
+        email={form.email}
+        onBack={onOpenLogin}
+      />
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl w-[420px] shadow-xl p-6">

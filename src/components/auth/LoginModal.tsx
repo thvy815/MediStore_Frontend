@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, X } from "lucide-react";
+import { Mail, Lock, X, Phone } from "lucide-react";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 interface Props {
   onClose: () => void;
@@ -12,19 +13,21 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [tab, setTab] = useState<"email" | "phone">("email");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleLogin = async () => {
     setError("");
     setSuccess("");
     try {
       setLoading(true);
-      const loggedUser = await login({ email, password });
+      const loggedUser = await login({ identifier, password }, rememberMe);
       setSuccess("Login successful!");
       setTimeout(() => {
         onClose();
@@ -41,6 +44,16 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
       setLoading(false);
     }
   };
+
+  if (showForgotPassword) {
+    return (
+      <ForgotPasswordModal
+        onBack={() =>
+          setShowForgotPassword(false)
+        }
+      />
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl w-[420px] shadow-xl p-6">
@@ -72,17 +85,21 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
         </button>
       </div>
 
-      {/* Email */}
+      {/* Identifier */}
       <label className="text-sm font-medium text-gray-700">
-        Email <span className="text-red-500">*</span>
+        {tab === "email" ? "Email" : "Phone"} <span className="text-red-500">*</span>
       </label>
       <div className="relative mt-1 mb-3">
-        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        {tab === "email" ? (
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        ) : (
+          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        )}  
         <input
           required
           className="w-full border rounded-lg pl-10 pr-4 py-2"
-          placeholder="example@email.com"
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder={tab === "email" ? "example@email.com" : "123-456-7890"}
+          onChange={(e) => setIdentifier(e.target.value)}
         />
       </div>
 
@@ -101,13 +118,22 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
         />
       </div>
 
-      {/* Remember */}
       <div className="flex justify-between items-center text-sm mb-4">
+        {/* Remember */}
         <label className="flex items-center gap-2">
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
           Remember me
         </label>
-        <span className="text-green-600 cursor-pointer">
+
+        {/* Forgot Password */}
+        <span 
+          onClick={() => setShowForgotPassword(true)}
+          className="text-green-600 cursor-pointer"
+        >
           Forgot password?
         </span>
       </div>

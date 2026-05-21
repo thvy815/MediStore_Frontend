@@ -2,16 +2,18 @@ import { api } from "@/api/axios";
 import type { Brand, BrandCreateRequest } from "@/types/brand";
 
 export const brandService = {
-  getAll: () => api.get<Brand[]>("/brands"),
+  // ===== CUSTOMER / PUBLIC =====
+  getAll: () => api.get<Brand[]>("/customer/brands"),
 
-  getById: (id: string) => api.get<Brand>(`/brands/${id}`),
+  getById: (id: string) => api.get<Brand>(`/customer/brands/${id}`),
 
+  // ===== ADMIN =====
   create: (data: BrandCreateRequest) =>
-    api.post<Brand>("/brands", data),
+    api.post<Brand>("/admin/brands", data),
 
   update: (id: string, data: BrandCreateRequest) =>
-    api.put<Brand>(`/brands/${id}`, data),
+    api.put<Brand>(`/admin/brands/${id}`, data),
 
   delete: (id: string) =>
-    api.delete(`/brands/${id}`),
+    api.delete(`/admin/brands/${id}`),
 };
