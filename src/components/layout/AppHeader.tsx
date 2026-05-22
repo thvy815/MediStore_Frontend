@@ -2,8 +2,7 @@ import { Search, ShoppingCart, ChevronDown, User, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import LoginModal from "@/components/auth/LoginModal";
-import RegisterModal from "../auth/RegisterModal";
+import AuthModal from "@/components/auth/AuthModal";
 
 const AppHeader = () => {
   const navigate = useNavigate();
@@ -11,8 +10,7 @@ const AppHeader = () => {
   const { user, logout } = useAuth();
 
   const [keyword, setKeyword] = useState("");
-  const [openLogin, setOpenLogin] = useState(false);
-  const [openRegister, setOpenRegister] = useState(false);
+  const [openAuth, setOpenAuth] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleSearch = () => {
@@ -130,7 +128,7 @@ const AppHeader = () => {
               </div>
             ) : (
               <button
-                onClick={() => setOpenLogin(true)}
+                onClick={() => setOpenAuth(true)}
                 className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
               >
                 Login
@@ -140,29 +138,9 @@ const AppHeader = () => {
         </div>
       </header>
 
-      {/* Login Modal */}
-      {openLogin && (
+      {openAuth && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <LoginModal
-            onClose={() => setOpenLogin(false)}
-            onOpenRegister={() => {
-              setOpenLogin(false);
-              setOpenRegister(true);
-            }}
-          />
-        </div>
-      )}
-
-      {/* Register Modal */}
-      {openRegister && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <RegisterModal
-            onClose={() => setOpenRegister(false)}
-            onOpenLogin={() => {
-              setOpenRegister(false);
-              setOpenLogin(true);
-            }}
-          />
+          <AuthModal onClose={() => setOpenAuth(false)} />
         </div>
       )}
     </>

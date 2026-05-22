@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { authService } from "@/services/authService";
 import { User, Mail, Phone, Lock, X } from "lucide-react";
-import VerifyEmailModal from "./VerifyMailModal";
 
 interface Props {
   onClose: () => void;
   onOpenLogin: () => void;
+  onSuccess: (email: string) => void;
 }
 
-const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
+const RegisterModal = ({ onClose, onOpenLogin, onSuccess }: Props) => {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -19,7 +19,6 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,27 +33,17 @@ const RegisterModal = ({ onClose, onOpenLogin }: Props) => {
     setError("");
     try {
       setLoading(true);
-      await authService.register(form);
-      setShowVerifyModal(true);
-      setSuccess("Registration successful! Please verify your email before login.");
-      setTimeout(() => {
-        onOpenLogin();
-      }, 1000);
+      const res = await authService.register(form);
+      console.log("REGISTER RESPONSE:", res.data);
+      setSuccess("Register success");
+      onSuccess?.(form.email);
     } catch (err: any) {
+      console.log("REGISTER ERROR:", err);
       setError(err.response?.data?.message || "Register failed");
     } finally {
       setLoading(false);
     }
   };
-
-  if (showVerifyModal) {
-    return (
-      <VerifyEmailModal
-        email={form.email}
-        onBack={onOpenLogin}
-      />
-    );
-  }
 
   return (
     <div className="bg-white rounded-2xl w-[420px] shadow-xl p-6">

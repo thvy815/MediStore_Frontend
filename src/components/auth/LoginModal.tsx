@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, X, Phone } from "lucide-react";
-import ForgotPasswordModal from "./ForgotPasswordModal";
 
 interface Props {
   onClose: () => void;
   onOpenRegister: () => void;
+  onOpenForgot: () => void;
 }
 
-const LoginModal = ({ onClose, onOpenRegister }: Props) => {
+const LoginModal = ({ onClose, onOpenRegister, onOpenForgot }: Props) => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +20,6 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleLogin = async () => {
     setError("");
@@ -44,16 +43,6 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
       setLoading(false);
     }
   };
-
-  if (showForgotPassword) {
-    return (
-      <ForgotPasswordModal
-        onBack={() =>
-          setShowForgotPassword(false)
-        }
-      />
-    );
-  }
 
   return (
     <div className="bg-white rounded-2xl w-[420px] shadow-xl p-6">
@@ -131,7 +120,7 @@ const LoginModal = ({ onClose, onOpenRegister }: Props) => {
 
         {/* Forgot Password */}
         <span 
-          onClick={() => setShowForgotPassword(true)}
+          onClick={onOpenForgot}
           className="text-green-600 cursor-pointer"
         >
           Forgot password?

@@ -2,18 +2,20 @@ import { Mail, ArrowLeft } from "lucide-react";
 
 interface Props {
   email: string;
-  onBack: () => void;
+  onBackToRegister: () => void;
+  onBackToLogin: () => void;
 }
 
 const VerifyEmailModal = ({
   email,
-  onBack,
+  onBackToRegister,
+  onBackToLogin,
 }: Props) => {
   return (
     <div className="bg-white rounded-2xl w-[420px] shadow-xl p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-5">
-        <button onClick={onBack}>
+        <button onClick={onBackToRegister}>
           <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
 
@@ -46,7 +48,7 @@ const VerifyEmailModal = ({
       </p>
 
       <button
-        onClick={onBack}
+        onClick={onBackToLogin}
         className="w-full mt-6 bg-green-700 hover:bg-green-800 text-white py-2 rounded-full"
       >
         Back to Login

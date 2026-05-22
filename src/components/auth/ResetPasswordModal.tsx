@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 
 import { authService } from "@/services/authService";
-import { useNavigate } from "react-router-dom";
 
 interface Props {
   token: string;
@@ -31,8 +30,6 @@ const ResetPasswordModal = ({
 
   const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
   const handleResetPassword = async () => {
     setError("");
     setSuccess("");
@@ -55,7 +52,7 @@ const ResetPasswordModal = ({
       );
 
       setTimeout(() => {
-        navigate("/");
+        onBack(); 
       }, 1500);
     } catch (err: any) {
       setError(

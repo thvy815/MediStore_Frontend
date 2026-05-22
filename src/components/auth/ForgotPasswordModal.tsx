@@ -5,11 +5,10 @@ import { authService } from "@/services/authService";
 
 interface Props {
   onBack: () => void;
+  onSuccess: (token: string) => void;
 }
 
-const ForgotPasswordModal = ({
-  onBack,
-}: Props) => {
+const ForgotPasswordModal = ({onBack, onSuccess}: Props) => {
   const [email, setEmail] = useState("");
 
   const [loading, setLoading] =
@@ -24,12 +23,10 @@ const ForgotPasswordModal = ({
     try {
       setLoading(true);
 
-      await authService.forgotPassword({
-        email,
-      });
+      await authService.forgotPassword({ email });
 
       setSuccess(
-        "Password reset email has been sent"
+        "Password reset email has been sent. Please check your inbox."
       );
     } catch (err: any) {
       setError(
