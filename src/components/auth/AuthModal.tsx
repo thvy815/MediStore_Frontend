@@ -3,7 +3,6 @@ import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import VerifyEmailModal from "./VerifyMailModal";
 import ForgotPasswordModal from "./ForgotPasswordModal";
-import ResetPasswordModal from "./ResetPasswordModal";
 
 type AuthStep =
   | "login"
@@ -15,7 +14,6 @@ type AuthStep =
 const AuthModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState<AuthStep>("login");
   const [email, setEmail] = useState("");
-  const [resetToken, setResetToken] = useState("");
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
@@ -49,17 +47,6 @@ const AuthModal = ({ onClose }: { onClose: () => void }) => {
 
       {step === "forgot" && (
         <ForgotPasswordModal
-          onBack={() => setStep("login")}
-          onSuccess={(token) => {
-            setResetToken(token);
-            setStep("reset");
-          }}
-        />
-      )}
-
-      {step === "reset" && (
-        <ResetPasswordModal
-          token={resetToken}
           onBack={() => setStep("login")}
         />
       )}

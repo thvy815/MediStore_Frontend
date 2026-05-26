@@ -5,10 +5,9 @@ import { authService } from "@/services/authService";
 
 interface Props {
   onBack: () => void;
-  onSuccess: (token: string) => void;
 }
 
-const ForgotPasswordModal = ({onBack, onSuccess}: Props) => {
+const ForgotPasswordModal = ({onBack}: Props) => {
   const [email, setEmail] = useState("");
 
   const [loading, setLoading] =

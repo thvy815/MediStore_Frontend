@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { chatService } from "@/services/chatService";
-import { chatSocketService } from "@/services/chatSocketService";
+import { webSocketService } from "@/services/webSocketService";
 import type { ChatMessage, ChatSession } from "@/types/chat";
 
 export default function ChatSessionManagement() {
@@ -17,12 +17,12 @@ export default function ChatSessionManagement() {
     fetchSessions();
 
     return () => {
-      chatSocketService.disconnect();
+      webSocketService.disconnect();
     };
   }, []);
 
   const connectToSessionSocket = (sessionId: string) => {
-  chatSocketService.connect(sessionId, (newMsg) => {
+  webSocketService.connectChat(sessionId, (newMsg) => {
     setMessages((prev) => {
       const newMsgId = newMsg.id || newMsg.messageId;
 

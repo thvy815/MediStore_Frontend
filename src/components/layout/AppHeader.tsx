@@ -1,8 +1,10 @@
 import { Search, ShoppingCart, ChevronDown, User, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/auth/AuthModal";
+import NotificationBell from "../navigationBar/NotificationBell";
+import { webSocketService } from "@/services/webSocketService";
 
 const AppHeader = () => {
   const navigate = useNavigate();
@@ -12,6 +14,20 @@ const AppHeader = () => {
   const [keyword, setKeyword] = useState("");
   const [openAuth, setOpenAuth] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const isCustomer = user?.roles?.includes("CUSTOMER") || !user;
+
+  // Kết nối WebSocket để nhận thông báo của user 
+  useEffect(() => {
+    if (!user || !isCustomer) return;
+
+    webSocketService.connectNotification(user.id);
+
+    return () => {
+      webSocketService.disconnectNotification();
+    };
+
+  }, [user, isCustomer]);
 
   const handleSearch = () => {
     if (!keyword.trim()) return;
@@ -25,8 +41,6 @@ const AppHeader = () => {
       setShowUserMenu(false);
     }
   };
-
-  const isCustomer = user?.roles?.includes("CUSTOMER") || !user;
 
   return (
     <>
@@ -64,76 +78,86 @@ const AppHeader = () => {
           {/* Right actions */}
           <div className="flex items-center gap-4">
 
-            {/* Cart chỉ customer */}
-            {isCustomer && (
-                <ShoppingCart
-                    className="cursor-pointer text-green-900"
-                    onClick={() => navigate("/customer/cart")}
-                />
+            {/* Cart chỉ customer đã login */}
+            {isCustomer && user && (
+              <>
+                <div
+                  className="relative cursor-pointer mr-6"
+                  onClick={() => navigate("/customer/cart")}
+                >
+                  <ShoppingCart className="text-green-900" />
+                </div>
+              </>
             )}
 
             {user ? (
-              <div
-                className="relative"
-                onMouseEnter={() => setShowUserMenu(true)}
-                onMouseLeave={() => setShowUserMenu(false)}
-              >
-                <div className="flex items-center gap-2 cursor-pointer hover:text-green-700">
-                  <span className="text-green-900 font-medium">
-                    {user.fullName}
-                  </span>
-                  <ChevronDown size={16} className="text-green-900" />
-                </div>
+              <div className="flex items-center gap-2">
 
-                {showUserMenu && (
-                  <div className="absolute right-0 top-full pt-2 w-52 z-50">
-                    <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                      
-                      {/* Profile */}
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          navigate("/customer/profile");
-                        }}
-                        className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <User size={16} className="text-gray-600" />
-                        <span className="text-gray-700">My Profile</span>
-                      </button>
-
-                    {isCustomer && (
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          navigate("/customer/orders");
-                        }}
-                        className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <Package size={16} className="text-gray-600" />
-                        <span className="text-gray-700">My Orders</span>
-                      </button>
-                    )}
-
-                      <hr className="my-2 border-gray-200" />
-
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 transition-colors"
-                      >
-                        <span>Logout</span>
-                      </button>
-                    </div>
+                <div
+                  className="relative flex items-center gap-2"
+                  onMouseEnter={() => setShowUserMenu(true)}
+                  onMouseLeave={() => setShowUserMenu(false)}
+                >
+                  <div className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-green-100 transition">
+                    <span className="text-green-900 font-medium">
+                      {user.fullName}
+                    </span>
+                    <ChevronDown size={16} className="text-green-900" />
                   </div>
-                )}
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 top-full pt-2 w-52 z-50">
+                      <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                        
+                        {/* Profile */}
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            navigate("/customer/profile");
+                          }}
+                          className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
+                        >
+                          <User size={16} className="text-gray-600" />
+                          <span className="text-gray-700">My Profile</span>
+                        </button>
+
+                      {isCustomer && (
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            navigate("/customer/orders");
+                          }}
+                          className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors"
+                        >
+                          <Package size={16} className="text-gray-600" />
+                          <span className="text-gray-700">My Orders</span>
+                        </button>
+                      )}
+
+                        <hr className="my-2 border-gray-200" />
+
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 transition-colors"
+                        >
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : (
-              <button
-                onClick={() => setOpenAuth(true)}
-                className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
-              >
-                Login
-              </button>
+              ) : (
+                <button
+                  onClick={() => setOpenAuth(true)}
+                  className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
+                >
+                  Login
+                </button>
+              
             )}
+                
+            {isCustomer && <NotificationBell />}
           </div>
         </div>
       </header>

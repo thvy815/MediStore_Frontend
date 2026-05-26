@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChatMessage, ChatSession, ChatType } from "@/types/chat";
 import { chatService } from "@/services/chatService";
-import { chatSocketService } from "@/services/chatSocketService";
+import { webSocketService } from "@/services/webSocketService";
 import "./ChatBubble.css";
 
 const chatOptions = [
@@ -79,7 +79,7 @@ export default function ChatBubble() {
       const oldMessages = await chatService.getMessagesBySession(session.id);
       setMessages(oldMessages);
 
-      chatSocketService.connect(session.id, (newMessage) => {
+      webSocketService.connectChat(session.id, (newMessage) => {
         addMessageIfNotExists(newMessage);
       });
     } catch (error) {
@@ -123,7 +123,7 @@ export default function ChatBubble() {
       setEndedSessionId(currentSession.id);
       setShowFeedback(true);
 
-      chatSocketService.disconnect();
+      webSocketService.disconnect();
       setCurrentSession(null);
       setMessages([]);
       setInputMessage("");
@@ -155,14 +155,14 @@ export default function ChatBubble() {
   };
 
   const handleBack = () => {
-    chatSocketService.disconnect();
+    webSocketService.disconnect();
     setCurrentSession(null);
     setMessages([]);
     setInputMessage("");
   };
 
   const handleClose = () => {
-    chatSocketService.disconnect();
+    webSocketService.disconnect();
     setIsOpen(false);
     setCurrentSession(null);
     setMessages([]);
