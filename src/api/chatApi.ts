@@ -6,7 +6,9 @@ import type {
   SendChatMessageRequest,
 } from "../types/chat";
 
-const API_URL = "http://localhost:8080/api/chat";
+import { api } from "@/api/axios";
+
+const BASE_URL = "/chat";
 
 export const createChatSession = async (
   userId: string,
@@ -17,47 +19,25 @@ export const createChatSession = async (
     type,
   };
 
-  const res = await fetch(`${API_URL}/sessions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const res = await api.post(`${BASE_URL}/sessions`, body);
 
-  if (!res.ok) {
-    throw new Error("Không thể tạo phiên chat");
-  }
-
-  return res.json();
+  return res.data;
 };
 
 export const sendChatMessage = async (
   data: SendChatMessageRequest
 ): Promise<ChatMessage> => {
-  const res = await fetch(`${API_URL}/messages`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  const res = await api.post(`${BASE_URL}/messages`, data);
 
-  if (!res.ok) {
-    throw new Error("Không thể gửi tin nhắn");
-  }
-
-  return res.json();
+  return res.data;
 };
 
 export const getChatMessages = async (
   sessionId: string
 ): Promise<ChatMessage[]> => {
-  const res = await fetch(`${API_URL}/sessions/${sessionId}/messages`);
+  const res = await api.get(
+    `${BASE_URL}/sessions/${sessionId}/messages`
+  );
 
-  if (!res.ok) {
-    throw new Error("Không thể lấy tin nhắn");
-  }
-
-  return res.json();
+  return res.data;
 };
