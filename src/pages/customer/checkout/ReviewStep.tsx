@@ -79,23 +79,34 @@ export default function ReviewStep() {
       // 1. Tạo order trước
       const res = await orderService.createOrder(orderData);
       const orderId = res.data.orderId;
-      console.log("ORDER DATA:", orderData);
+      console.log("PAYMENT:", payment);
+      console.log("PAYMENT CODE:", payment?.code);
+      // =========================
+      // CASH
+      // =========================
+      if (payment.code === "cod") {
 
-      // 2. Nếu không phải VNPay → done luôn
-      if (payment.code !== "vnpay") {
         alert("Order placed successfully!");
+
         navigate("/customer/orders");
+
         return;
       }
 
-      // 3. VNPay flow
-      const paymentRes = await paymentService.createPayment(orderId);
+      // =========================
+      // VNPAY
+      // =========================
+      if (payment.code === "vnpay") {
+
+        const paymentRes =
+          await paymentService.createPayment(orderId);
 
         console.log("VNPay response:", paymentRes);
 
         const paymentUrl = paymentRes.paymentUrl;
 
         if (!paymentUrl) {
+
           console.error("Invalid VNPay response:", paymentRes);
 
           alert("Không tạo được VNPay URL");
@@ -105,20 +116,55 @@ export default function ReviewStep() {
 
         window.location.href = paymentUrl;
 
-      // backend trả về URL VNPay
-      window.location.href = paymentRes.paymentUrl;
+        return;
+      }
+
+      // =========================
+      // ZALOPAY
+      // =========================
+      if (payment.code === "zalopay") {
+
+        const zaloRes =
+          await paymentService.createZaloPayPayment(orderId);
+
+        console.log("ZaloPay response:", zaloRes);
+
+        const orderUrl = zaloRes.paymentUrl;
+
+        if (!orderUrl) {
+
+          console.error("Invalid ZaloPay response:", zaloRes);
+
+          alert("Không tạo được ZaloPay URL");
+
+          return;
+        }
+
+        window.location.href = orderUrl;
+
+        return;
+      }
+
     } catch (err: unknown) {
+
       console.error(err);
+
       const message =
         err instanceof Error
           ? err.message
-          : typeof err === "object" && err !== null && "response" in err
+          : typeof err === "object" &&
+            err !== null &&
+            "response" in err
           ? (err as any).response?.data?.message
           : undefined;
+
       alert(message || "Create order failed");
+
     } finally {
+
       setLoading(false);
     }
+
   };
 
   return (
