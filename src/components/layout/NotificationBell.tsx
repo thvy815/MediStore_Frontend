@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { notificationSubject } from "@/observer/NotificationSubject";
 import type { NotificationObserver } from "@/observer/NotificationObserver";
 import type { Notification } from "@/types/notification";
 import { useAuth } from "@/contexts/AuthContext";
 import { notificationService } from "@/services/notificationService";
+import { extractOrderCode } from "@/utils/extractOrderCode";
 
 class BellObserver implements NotificationObserver {
 
@@ -24,8 +26,9 @@ export default function NotificationBell() {
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
-
   const { user } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -43,8 +46,9 @@ export default function NotificationBell() {
 
     fetchNotifications();
 
-  }, [user]);
+  }, [user]);  
 
+  // Đánh dấu notification là đã đọc
   const handleMarkAsRead = async (notificationId: string) => {
 
     try {
@@ -63,6 +67,24 @@ export default function NotificationBell() {
     }
   };
 
+  // Khi click vào notification, đánh dấu đã đọc và điều hướng đến trang chi tiết đơn hàng nếu có order code
+  const handleNotificationClick = async (
+    notification: Notification
+  ) => {
+
+    await handleMarkAsRead(notification.id);
+
+    setOpen(false);
+
+    const orderCode = extractOrderCode(
+      notification.message
+    );
+
+    navigate(
+      `/customer/orders?highlight=${orderCode || ""}`
+    );
+  };
+
   useEffect(() => {
 
     const observer = new BellObserver((notification) => {
@@ -77,10 +99,28 @@ export default function NotificationBell() {
 
   }, []);
 
+  // Đếm số lượng notification chưa đọc để hiển thị badge
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => { document.removeEventListener("mousedown", handleClickOutside); };
+
+  }, []);
+
   return (
-    <div className="relative">
+    <div ref={dropdownRef} className="relative">
 
       {/* Bell button */}
       <button
@@ -100,7 +140,7 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border z-50 max-h-96 overflow-y-auto">
 
-          <div className="p-3 border-b font-semibold text-green-900">
+          <div className="sticky top-0 z-10 p-3 border-b font-semibold text-green-900 bg-white">
             Notifications
           </div>
 
@@ -114,7 +154,7 @@ export default function NotificationBell() {
             notifications.map(notification => (
               <div
                 key={notification.id}
-                onClick={() => handleMarkAsRead(notification.id)}
+                onClick={() => handleNotificationClick(notification)}
                 className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition ${
                   !notification.isRead
                     ? "bg-green-50"
