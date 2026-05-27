@@ -130,6 +130,8 @@ export default function ReviewStep() {
         console.log("ZaloPay response:", zaloRes);
 
         const orderUrl = zaloRes.paymentUrl;
+        const txnRef = zaloRes.transactionRef;
+        paymentService.manualSuccess(txnRef);
 
         if (!orderUrl) {
 
