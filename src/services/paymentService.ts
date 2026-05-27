@@ -15,4 +15,13 @@ export const paymentService = {
 
     return res.data;
   },
+  
+    createZaloPayPayment: async (orderId: string) => {
+
+    const res = await api.post(
+      `/payments/zalopay/create/${orderId}`
+    );
+
+    return res.data;
+  },
 };
