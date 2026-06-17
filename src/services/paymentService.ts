@@ -15,7 +15,7 @@ export const paymentService = {
 
     return res.data;
   },
-  
+
     createZaloPayPayment: async (orderId: string) => {
 
     const res = await api.post(
@@ -24,4 +24,12 @@ export const paymentService = {
 
     return res.data;
   },
+
+  manualSuccess: async (txnRef: string) => {
+  const res = await api.post(
+    `/payments/manual-success/${txnRef}`
+  );
+
+  return res.data;
+},
 };

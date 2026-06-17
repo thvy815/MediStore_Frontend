@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { api } from "@/api/axios";
 
 export default function PaymentResult() {
 
@@ -29,15 +29,23 @@ export default function PaymentResult() {
         ) {
 
           // CALL BE UPDATE STATUS
-          await axios.post(
-            `http://localhost:8080/api/payments/success/${txnRef}`
+          await api.post(
+            `/payments/success/${txnRef}`
           );
 
           setStatus("success");
 
+          setTimeout(() => {
+            navigate("/customer/orders");
+          }, 2000);
+
         } else {
 
           setStatus("failed");
+
+          setTimeout(() => {
+            navigate("/checkout");
+          }, 2000);
         }
 
       } catch (err) {
@@ -45,12 +53,16 @@ export default function PaymentResult() {
         console.error(err);
 
         setStatus("failed");
+
+        setTimeout(() => {
+          navigate("/checkout");
+        }, 2000);
       }
     };
 
     updatePayment();
 
-  }, [responseCode, transactionStatus, txnRef]);
+  }, [responseCode, transactionStatus, txnRef, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

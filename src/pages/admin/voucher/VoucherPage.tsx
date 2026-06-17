@@ -80,7 +80,7 @@ export default function VoucherPage() {
             to="/dashboard/voucher"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
-              "/admin/voucher"
+              "/dashboard/voucher"
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-gray-100 text-gray-700"
             }`}
@@ -94,7 +94,7 @@ export default function VoucherPage() {
             to="/dashboard/voucher/supervise"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
               location.pathname ===
-              "/admin/voucher/supervise"
+              "/dashboard/voucher/supervise"
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-gray-100 text-gray-700"
             }`}

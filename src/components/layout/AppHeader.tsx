@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthModal from "@/components/auth/AuthModal";
-import NotificationBell from "../navigationBar/NotificationBell";
+import NotificationBell from "./NotificationBell";
 import { webSocketService } from "@/services/webSocketService";
 
 const AppHeader = () => {
@@ -157,7 +157,7 @@ const AppHeader = () => {
               
             )}
                 
-            {isCustomer && <NotificationBell />}
+            {isCustomer && user && <NotificationBell />}
           </div>
         </div>
       </header>

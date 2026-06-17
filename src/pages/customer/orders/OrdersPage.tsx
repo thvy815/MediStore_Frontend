@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Package,
@@ -21,6 +21,10 @@ type FilterType = "all" | "week" | "month" | "custom";
 
 export default function OrdersPage() {
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+  const highlightCode = searchParams.get("highlight");
+
   const { user } = useAuth();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -154,6 +158,42 @@ export default function OrdersPage() {
 
     await loadOrdersByDateRange(startDate, endDate);
   };
+  useEffect(() => {
+
+    if (!highlightCode || loading) return;
+
+    const matchedOrder = orders.find(
+      order =>
+        order.orderId?.slice(-8) === highlightCode
+    );
+
+    if (!matchedOrder) return;
+
+    const element = document.getElementById(
+      `order-${matchedOrder.orderId}`
+    );
+
+    if (element) {
+
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      element.classList.add(
+        "ring-4",
+        "ring-green-400"
+      );
+
+      setTimeout(() => {
+        element.classList.remove(
+          "ring-4",
+          "ring-green-400"
+        );
+      }, 3000);
+    }
+
+  }, [highlightCode, loading, orders]);
 
   const handleCompleteOrder = async (orderId: string) => {
     if (!confirm("Xác nhận bạn đã nhận được hàng?")) return;
@@ -389,6 +429,7 @@ export default function OrdersPage() {
 
                 return (
                   <div
+                    id={`order-${order.orderId}`}
                     key={order.orderId}
                     className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
                   >
