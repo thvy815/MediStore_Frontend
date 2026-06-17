@@ -23,7 +23,7 @@ export default function RevenueChart({ data }: Props) {
       {/* LINE CHART */}
       <div className="bg-white p-5 rounded-2xl shadow border">
         <h2 className="font-bold text-lg mb-4">
-          Revenue Trend (Last 7 Days)
+          Revenue Trend
         </h2>
 
         <ResponsiveContainer width="100%" height={320}>
@@ -49,7 +49,7 @@ export default function RevenueChart({ data }: Props) {
       {/* BAR CHART */}
       <div className="bg-white p-5 rounded-2xl shadow border">
         <h2 className="font-bold text-lg mb-4">
-          Revenue Overview (Last 7 Days)
+          Revenue Overview
         </h2>
 
         <ResponsiveContainer width="100%" height={320}>

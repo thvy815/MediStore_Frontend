@@ -1,45 +1,147 @@
 import { api } from "@/api/axios";
 
+const getDefaultDateRange = () => {
+  const endDate = new Date();
+
+  const startDate = new Date();
+  startDate.setDate(endDate.getDate() - 30);
+
+  return {
+    startDate: startDate.toISOString().split("T")[0],
+    endDate: endDate.toISOString().split("T")[0],
+  };
+};
+
 export const reportService = {
-  getRevenueByMonth: async () => {
-    const res = await api.get("/reports/revenue/month");
+  // =========================
+  // REVENUE
+  // =========================
+
+  getRevenueByMonth: async (
+    startDate?: string,
+    endDate?: string
+  ) => {
+    const defaultRange = getDefaultDateRange();
+
+    const res = await api.get(
+      "/reports/revenue/month",
+      {
+        params: {
+          startDate:
+            startDate ??
+            defaultRange.startDate,
+
+          endDate:
+            endDate ??
+            defaultRange.endDate,
+        },
+      }
+    );
+
     return res.data;
   },
 
-  getRevenueByDay: async (startDate: string, endDate: string) => {
-    const res = await api.get("/reports/revenue/day", {
-      params: {
-        startDate,
-        endDate,
-      },
-    });
+  getRevenueByDay: async (
+    startDate: string,
+    endDate: string
+  ) => {
+    const res = await api.get(
+      "/reports/revenue/day",
+      {
+        params: {
+          startDate,
+          endDate,
+        },
+      }
+    );
+
     return res.data;
   },
 
-  getRevenueByProduct: async () => {
-    const res = await api.get("/reports/revenue/product");
+  getRevenueByProduct: async (
+    startDate?: string,
+    endDate?: string
+  ) => {
+    const defaultRange = getDefaultDateRange();
+
+    const res = await api.get(
+      "/reports/revenue/product",
+      {
+        params: {
+          startDate:
+            startDate ??
+            defaultRange.startDate,
+
+          endDate:
+            endDate ??
+            defaultRange.endDate,
+        },
+      }
+    );
+
     return res.data;
   },
 
-  getBestSellingProducts: async () => {
-    const res = await api.get("/reports/best-selling");
+  // =========================
+  // BEST SELLING
+  // =========================
+
+  getBestSellingProducts: async (
+    startDate?: string,
+    endDate?: string
+  ) => {
+    const defaultRange = getDefaultDateRange();
+
+    const res = await api.get(
+      "/reports/best-selling",
+      {
+        params: {
+          startDate:
+            startDate ??
+            defaultRange.startDate,
+
+          endDate:
+            endDate ??
+            defaultRange.endDate,
+        },
+      }
+    );
+
     return res.data;
   },
+
+  // =========================
+  // INVENTORY
+  // =========================
 
   getInventoryReport: async () => {
-    const res = await api.get("/reports/inventory");
+    const res = await api.get(
+      "/reports/inventory"
+    );
+
     return res.data;
   },
 
-  getLowStockProducts: async (threshold = 20) => {
-    const res = await api.get("/reports/inventory/low-stock", {
-      params: { threshold },
-    });
+  getLowStockProducts: async (
+    threshold = 20
+  ) => {
+    const res = await api.get(
+      "/reports/inventory/low-stock",
+      {
+        params: {
+          threshold,
+        },
+      }
+    );
+
     return res.data;
   },
 
   getInventorySalesRatio: async () => {
-    const res = await api.get("/reports/inventory/sales-ratio");
+    const res = await api.get(
+      "/reports/inventory/sales-ratio"
+    );
+
     return res.data;
   },
 };
