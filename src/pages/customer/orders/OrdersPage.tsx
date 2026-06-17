@@ -17,12 +17,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { orderService } from "@/services/orderService";
 import type { Order } from "@/types/order";
 
+type FilterType = "all" | "week" | "month" | "custom";
+
 export default function OrdersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [filterType, setFilterType] = useState<FilterType>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewOrder, setReviewOrder] = useState<Order | null>(null);
@@ -40,6 +46,40 @@ export default function OrdersPage() {
     loadOrders();
   }, [user, navigate]);
 
+  const formatDateForApi = (date: Date) => {
+    return date.toISOString().split("T")[0];
+  };
+
+  const getThisWeekRange = () => {
+    const today = new Date();
+    const day = today.getDay();
+
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return {
+      start: formatDateForApi(monday),
+      end: formatDateForApi(sunday),
+    };
+  };
+
+  const getThisMonthRange = () => {
+    const today = new Date();
+
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    return {
+      start: formatDateForApi(firstDay),
+      end: formatDateForApi(lastDay),
+    };
+  };
+
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -52,43 +92,102 @@ export default function OrdersPage() {
     }
   };
 
+  const loadOrdersByDateRange = async (start: string, end: string) => {
+    try {
+      setLoading(true);
+      const res = await orderService.getUserOrdersByDateRange(
+        user!.id,
+        start,
+        end
+      );
+      setOrders(res.data);
+    } catch (err) {
+      console.error("Failed to filter orders", err);
+      alert("Không thể lọc đơn hàng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = async (type: FilterType) => {
+    setFilterType(type);
+
+    if (type === "all") {
+      setStartDate("");
+      setEndDate("");
+      await loadOrders();
+      return;
+    }
+
+    if (type === "week") {
+      const range = getThisWeekRange();
+      setStartDate(range.start);
+      setEndDate(range.end);
+      await loadOrdersByDateRange(range.start, range.end);
+      return;
+    }
+
+    if (type === "month") {
+      const range = getThisMonthRange();
+      setStartDate(range.start);
+      setEndDate(range.end);
+      await loadOrdersByDateRange(range.start, range.end);
+      return;
+    }
+
+    if (type === "custom") {
+      setStartDate("");
+      setEndDate("");
+    }
+  };
+
+  const handleApplyCustomFilter = async () => {
+    if (!startDate || !endDate) {
+      alert("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc");
+      return;
+    }
+
+    if (startDate > endDate) {
+      alert("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+      return;
+    }
+
+    await loadOrdersByDateRange(startDate, endDate);
+  };
+
   const handleCompleteOrder = async (orderId: string) => {
-  if (!confirm("Xác nhận bạn đã nhận được hàng?")) return;
+    if (!confirm("Xác nhận bạn đã nhận được hàng?")) return;
 
-  try {
-    await orderService.completeOrder(orderId, user!.id);
+    try {
+      await orderService.completeOrder(orderId, user!.id);
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.orderId === orderId
-          ? { ...order, status: "completed" }
-          : order
-      )
-    );
-  } catch (error) {
-    console.error(error);
-    alert("Không thể cập nhật trạng thái đơn hàng");
-  }
-};
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.orderId === orderId ? { ...order, status: "completed" } : order
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Không thể cập nhật trạng thái đơn hàng");
+    }
+  };
 
-const handleCancelOrder = async (orderId: string) => {
-  if (!confirm("Bạn có chắc muốn huỷ đơn hàng này?")) return;
+  const handleCancelOrder = async (orderId: string) => {
+    if (!confirm("Bạn có chắc muốn huỷ đơn hàng này?")) return;
 
-  try {
-    await orderService.cancelOrder(orderId, user!.id);
+    try {
+      await orderService.cancelOrder(orderId, user!.id);
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.orderId === orderId
-          ? { ...order, status: "cancelled" }
-          : order
-      )
-    );
-  } catch (error) {
-    console.error(error);
-    alert("Không thể huỷ đơn hàng");
-  }
-};
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.orderId === orderId ? { ...order, status: "cancelled" } : order
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Không thể huỷ đơn hàng");
+    }
+  };
 
   const openReviewModal = (order: Order) => {
     if (order.status !== "completed") return;
@@ -180,7 +279,7 @@ const handleCancelOrder = async (orderId: string) => {
         </button>
 
         <div className="bg-white rounded-xl shadow-sm p-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-800">
               Đơn hàng của tôi
             </h1>
@@ -190,6 +289,89 @@ const handleCancelOrder = async (orderId: string) => {
             </div>
           </div>
 
+          <div className="mb-8 bg-gray-50 border border-gray-200 rounded-xl p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => handleFilterChange("all")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  filterType === "all"
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                Tất cả
+              </button>
+
+              <button
+                onClick={() => handleFilterChange("week")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  filterType === "week"
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                Tuần này
+              </button>
+
+              <button
+                onClick={() => handleFilterChange("month")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  filterType === "month"
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                Tháng này
+              </button>
+
+              <button
+                onClick={() => handleFilterChange("custom")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  filterType === "custom"
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                Tuỳ chọn
+              </button>
+            </div>
+
+            {filterType === "custom" && (
+              <div className="flex flex-wrap items-end gap-3 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Từ ngày
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Đến ngày
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+
+                <button
+                  onClick={handleApplyCustomFilter}
+                  className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700"
+                >
+                  Lọc đơn hàng
+                </button>
+              </div>
+            )}
+          </div>
+
           {orders.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -197,7 +379,7 @@ const handleCancelOrder = async (orderId: string) => {
                 Chưa có đơn hàng nào
               </h3>
               <p className="text-gray-500">
-                Khi bạn đặt hàng, đơn hàng sẽ xuất hiện ở đây.
+                Không có đơn hàng trong khoảng thời gian này.
               </p>
             </div>
           ) : (
