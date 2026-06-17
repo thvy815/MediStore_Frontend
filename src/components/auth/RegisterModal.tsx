@@ -13,8 +13,10 @@ const RegisterModal = ({ onClose, onOpenLogin, onSuccess }: Props) => {
     fullName: "",
     email: "",
     phone: "",
+    birthDate: "",
     password: "",
     confirmPassword: "",
+
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -81,6 +83,15 @@ const RegisterModal = ({ onClose, onOpenLogin, onSuccess }: Props) => {
             name="phone"
             placeholder="0123456789"
             icon={<Phone size={18} />}
+            onChange={handleChange}
+          />
+
+          <Input
+            label="Date of Birth"
+            required
+            type="date"
+            name="birthDate"
+            placeholder="dd-mm-yyyy"
             onChange={handleChange}
           />
 

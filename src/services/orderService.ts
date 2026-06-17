@@ -3,10 +3,6 @@ import { getUserId } from "@/utils/auth";
 import type { Order } from "@/types/order";
 
 export const orderService = {
-  /**
-   * CREATE ORDER
-   * POST /api/orders
-   */
   createOrder: (data: {
     items: {
       cartItemId: string;
@@ -29,14 +25,32 @@ export const orderService = {
     });
   },
 
-  /**
-   * GET USER ORDERS
-   * GET /api/orders/user/{userId}
-   */
   getUserOrders: (userId: string) => api.get<Order[]>(`/orders/user/${userId}`),
 
+  getUserOrdersByDateRange: (
+    userId: string,
+    startDate: string,
+    endDate: string
+  ) => {
+    return api.get<Order[]>(`/orders/user/${userId}/filter`, {
+      params: {
+        startDate,
+        endDate,
+      },
+    });
+  },
+
   getAll: () => {
-    return api.get("/orders");
+    return api.get<Order[]>("/orders");
+  },
+
+  getAllByDateRange: (startDate: string, endDate: string) => {
+    return api.get<Order[]>("/orders/filter", {
+      params: {
+        startDate,
+        endDate,
+      },
+    });
   },
 
   markDelivered: (orderId: string) => {
