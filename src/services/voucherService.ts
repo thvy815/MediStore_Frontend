@@ -6,9 +6,19 @@ import type {
 } from "@/types/voucher";
 
 export const voucherService = {
-  getAll: async (): Promise<Voucher[]> => {
-    const res = await api.get<Voucher[]>("/vouchers");
-    return res.data;
+  getAll: async (
+    userId: string
+  ) => {
+    const response = await api.get(
+      "/vouchers",
+      {
+        params: {
+          userId,
+        },
+      }
+    );
+
+    return response.data;
   },
 
   getById: async (id: string): Promise<Voucher> => {
