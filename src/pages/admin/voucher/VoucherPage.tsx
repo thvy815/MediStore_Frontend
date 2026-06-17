@@ -11,6 +11,11 @@ import VoucherCard from "../../../components/voucher/VoucherCard";
 import CreateVoucherModal from "./modal/CreateVoucherModal";
 
 import UpdateVoucherModal from "./modal/UpdateVoucherModal";
+const userId = JSON.parse(
+  localStorage.getItem("user") ||
+    sessionStorage.getItem("user") ||
+    "{}"
+)?.id;
 
 export default function VoucherPage() {
   const location = useLocation();
@@ -32,7 +37,7 @@ export default function VoucherPage() {
 
   const fetchVouchers = async () => {
     try {
-      const res = await voucherService.getAll();
+      const res = await voucherService.getAll(userId);
 
       setVouchers(res);
     } catch (err) {

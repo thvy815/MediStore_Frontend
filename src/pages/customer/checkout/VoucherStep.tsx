@@ -13,17 +13,45 @@ export default function VoucherStep() {
 
   useEffect(() => {
     const loadVouchers = async () => {
-      try {
-       const res = await voucherService.getAll();
-        setVouchers(
-  res.filter((v: Voucher) => v.status === "active")
-);
-      } catch (err) {
-        console.error("Failed to load vouchers", err);
-      } finally {
-        setLoading(false);
+    try {
+
+      // lấy user từ local hoặc session
+      const user = JSON.parse(
+        localStorage.getItem("user") ||
+        sessionStorage.getItem("user") ||
+        "{}"
+      );
+
+      console.log("user", user);
+
+      if (!user?.id) {
+        console.error("User not found");
+        return;
       }
-    };
+
+      // gọi API
+      const res =
+        await voucherService.getAll(
+          user.id
+        );
+
+      setVouchers(
+        res.filter(
+          (v: Voucher) =>
+            v.status?.toLowerCase() ===
+            "active"
+        )
+      );
+
+    } catch (err) {
+      console.error(
+        "Failed to load vouchers",
+        err
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
     loadVouchers();
   }, []);

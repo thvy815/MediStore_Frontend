@@ -7,6 +7,11 @@ import {
   BarChart3,
 } from "lucide-react";
 
+const userId = JSON.parse(
+  localStorage.getItem("user") ||
+    sessionStorage.getItem("user") ||
+    "{}"
+)?.id;
 import {
   Link,
   useLocation,
@@ -77,7 +82,7 @@ export default function SuperviseVoucherPage() {
       async () => {
         try {
           const res =
-            await voucherService.getAll();
+            await voucherService.getAll(userId);
 
           const voucherData =
             res;
